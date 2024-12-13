@@ -1,0 +1,11 @@
+RewriteEngine On
+#RewriteBase /~krupima3/
+
+# If the file or directory exists, do not rewrite
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# If not an existing file or directory, then apply your rules
+RewriteRule ^api/(.*)$ index.php?url=$1 [QSA,L]
+RewriteRule . index.html [L]

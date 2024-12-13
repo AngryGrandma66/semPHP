@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Chat App</title>
+    <style>
+        /* Simple navbar styling */
+        nav {
+            background: #333;
+            padding: 0.5em;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 1em;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #content {
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <!-- The onclick handlers and JS logic are removed.
+         The SPA navigation will be handled by the router
+         intercepting link clicks or you can use
+         event delegation in your app.js -->
+    <a href="/home">Home</a>
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
+    <a href="/chatroom/one">Chatroom One</a>
+</nav>
+
+<div id="content">Loading...</div>
+
+<!-- Import the main JS file. The router and other logic
+     will handle links and views. No inline JS here. -->
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
