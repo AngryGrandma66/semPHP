@@ -12,5 +12,4 @@ $routes = [
     'api/chatroom/(.*)/sendMessage' => ['controller' => 'ChatController', 'action' => 'sendMessage', 'method' => 'POST'],
     'api/chatroom/(.*)' => ['controller' => 'ChatController', 'action' => 'getMessagesForChatroom', 'method' => 'GET'],
 
-    // Additional routes as needed
 ];

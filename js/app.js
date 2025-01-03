@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('click', (e) => {
     const target = e.target.closest('a');
-    if (target && target.href.startsWith(window.location.origin)) {
+    if (target?.href.startsWith(window.location.origin)) {
         e.preventDefault();
         const path = target.getAttribute('href');
         navigateTo(path)

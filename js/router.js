@@ -20,8 +20,6 @@ export function navigateTo(path) {
 async function handleRoute() {
     const path = window.location.pathname;
     const view = routes[path];
-    const content = document.getElementById('content');
-    content.textContent = 'Loading...';
 
     if (!view) {
         // Not Found

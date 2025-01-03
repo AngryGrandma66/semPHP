@@ -39,7 +39,6 @@ export function renderView() {
             alert(`Error: ${result.error}`);
         }
     });
-
     content.appendChild(form);
 
     const p = document.createElement('p');

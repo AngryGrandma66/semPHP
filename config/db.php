@@ -1,6 +1,6 @@
 <?php
 $host = "localhost";
-$dbname = "semestralkaPHP";
+$dbname = "zalSem";
 $user = 'root';
 $password = 'root';
 

@@ -1,4 +1,5 @@
 <?php
+global $routes;
 require_once __DIR__ . '/autoload.php';
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];

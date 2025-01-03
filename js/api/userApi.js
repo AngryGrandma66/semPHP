@@ -12,11 +12,11 @@ function getJsonHeaders() {
     return headers;
 }
 
-export async function registerUser(username, password) {
+export async function registerUser(username,email,password,confirmPassword) {
     const resp = await fetch('/api/register', {
         method: 'POST',
         headers: getJsonHeaders(),
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username,email,password,confirmPassword }),
         credentials: 'include'
     });
     return resp.json();
