@@ -1,4 +1,6 @@
 // router.js
+import {setupNavbar} from "./partials/navbar";
+
 const routes = {
     '/': 'home',
     '/home': 'home',
@@ -19,6 +21,7 @@ export function navigateTo(path) {
 
 async function handleRoute() {
     const path = window.location.pathname;
+    await setupNavbar()
     const view = routes[path];
 
     if (!view) {

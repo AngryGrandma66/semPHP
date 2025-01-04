@@ -12,27 +12,26 @@ function getJsonHeaders() {
     return headers;
 }
 
-export async function registerUser(username,email,password,confirmPassword) {
+export async function registerUser(formData) {
     const resp = await fetch('/api/register', {
         method: 'POST',
-        headers: getJsonHeaders(),
-        body: JSON.stringify({ username,email,password,confirmPassword }),
+        body: formData,
         credentials: 'include'
     });
     return resp.json();
 }
 
-export async function loginUser(username, password) {
+export async function loginUser(loginInput, password) {
     const resp = await fetch('/api/login', {
         method: 'POST',
         headers: getJsonHeaders(),
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ loginInput, password }),
         credentials: 'include'
     });
     const data = await resp.json();
-    if (data.success && data.csrfToken) {
-        setCSRFToken(data.csrfToken);
-    }
+    // if (data.success && data.csrfToken) {
+    //     setCSRFToken(data.csrfToken);
+    // }
     return data;
 }
 

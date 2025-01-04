@@ -4,16 +4,17 @@ namespace App\Models;
 
 class UserModel extends BaseModel
 {
-    public function createUser($username, $email, $passwordHash)
+    public function createUser($username, $email, $passwordHash,$pathtopfp)
     {
         $stmt = $this->db->prepare(
-            "INSERT INTO users (username, email, password)
-             VALUES (:u, :e, :p)"
+            "INSERT INTO users (username, email, password,pathtopfp)
+             VALUES (:u, :e, :p,:pa)"
         );
         $stmt->execute([
             ':u' => $username,
             ':e' => $email,
-            ':p' => $passwordHash
+            ':p' => $passwordHash,
+            ':pa' => $pathtopfp
         ]);
     }
 

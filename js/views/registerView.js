@@ -13,6 +13,7 @@ export function renderView() {
           id="username"
           name="username"
           placeholder="Choose a username"
+       required
         />
         <span id="usernameError" class="error"></span>
       </div>
@@ -25,6 +26,7 @@ export function renderView() {
           id="email"
           name="email"
           placeholder="Enter your email"
+          required
         />
         <span id="emailError" class="error"></span>
       </div>
@@ -37,6 +39,7 @@ export function renderView() {
           id="password"
           name="password"
           placeholder="Create a password"
+        required
         />
         <span id="passwordError" class="error"></span>
       </div>
@@ -49,10 +52,23 @@ export function renderView() {
           id="confirmPassword"
           name="confirmPassword"
           placeholder="Re-enter your password"
+        required
         />
         <span id="confirmPasswordError" class="error"></span>
       </div>
 
+      <div class="form-group">
+        <label for="profile_pic">Profile picture</label>
+        <input type="file"
+        name="pfpPic" 
+        accept=".webp, .png, .jpeg, .jpg" 
+        id="profile_pic"
+        alt="profile pic upload"
+        required
+        />
+        
+        <span id="fileError" class="error"></span>
+       </div>
       <button type="submit">Register</button>
     </form>
   `;
@@ -63,25 +79,17 @@ export function renderView() {
         e.preventDefault();
 
         // Grab all the input elements
-        const userInput = document.getElementById('username');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
 
-        // Send registration request to the API
+        const formData = new FormData(form);// Send registration request to the API
         const result = await registerUser(
-            userInput.value,
-            emailInput.value,
-            passwordInput.value,
-            confirmPasswordInput.value,
-        );
+        formData);
 
         // Clear out previous error messages
         document.getElementById('usernameError').textContent = '';
         document.getElementById('emailError').textContent = '';
         document.getElementById('passwordError').textContent = '';
         document.getElementById('confirmPasswordError').textContent = '';
-
+        document.getElementById('fileError').textContent = '';
         if (result.success) {
             // If registration is successful, navigate to login (or anywhere else)
             navigateTo('/login');
@@ -100,6 +108,9 @@ export function renderView() {
                 }
                 if (result.errors.confirmPassword) {
                     document.getElementById('confirmPasswordError').textContent = result.errors.confirmPassword;
+                }
+                if (result.errors.pfpPic) {
+                    document.getElementById('fileError').textContent = result.errors.pfpPic;
                 }
             } else if (result.error) {
                 // If there’s a generic error message (or some other error structure)
