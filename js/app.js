@@ -1,6 +1,8 @@
 import {initRouter, navigateTo} from './router.js';
+import {setupNavbar} from "./partials/navbar.js";
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await setupNavbar()
     initRouter();
 });
 

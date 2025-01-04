@@ -1,12 +1,11 @@
 // router.js
-import {setupNavbar} from "./partials/navbar";
 
 const routes = {
     '/': 'home',
     '/home': 'home',
     '/login': 'login',
     '/register': 'register',
-    '/chatroom/one': 'chatroom'
+    '/chatroom/one': 'chatroom',
 };
 
 export function initRouter() {
@@ -21,7 +20,6 @@ export function navigateTo(path) {
 
 async function handleRoute() {
     const path = window.location.pathname;
-    await setupNavbar()
     const view = routes[path];
 
     if (!view) {

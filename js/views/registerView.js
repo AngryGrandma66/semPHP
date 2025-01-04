@@ -82,7 +82,7 @@ export function renderView() {
 
         const formData = new FormData(form);// Send registration request to the API
         const result = await registerUser(
-        formData);
+        formData) ;
 
         // Clear out previous error messages
         document.getElementById('usernameError').textContent = '';

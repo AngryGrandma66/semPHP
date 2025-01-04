@@ -7,7 +7,7 @@ export async function renderView() {
     content.textContent = 'Loading chatroom...';
 
     const userData = await getCurrentUser();
-    if (!userData.loggedIn) {
+    if (!userData.logged) {
         alert('You must be logged in to view chatrooms.');
         navigateTo('/login');
         return;

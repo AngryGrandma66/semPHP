@@ -35,6 +35,7 @@ export async function loginUser(loginInput, password) {
     return data;
 }
 
+
 export async function logoutUser() {
     const headers = {};
     if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
@@ -44,9 +45,15 @@ export async function logoutUser() {
         headers,
         credentials: 'include'
     });
-    return resp.json();
-}
+    const data = await resp.json();
 
+    if (data.success) {
+        // Update the navbar after successful logout
+        import('../partials/navbar.js').then(module => module.setupNavbar());
+    }
+
+    return data;
+}
 export async function getCurrentUser() {
     const resp = await fetch('/api/currentUser', { credentials: 'include' });
     const data = await resp.json();

@@ -159,19 +159,28 @@ class UserController extends BaseController
         $this->sendJsonResponse(['success' => true, 'message' => 'Logged out']);
     }
 
+// /App/Controllers/UserController.php
+
     public function getCurrentUser()
     {
+        session_start();
         if (isset($_SESSION['username'])) {
             $this->sendJsonResponse([
                 'success' => true,
+                'logged' => true,
                 'user' => $_SESSION['username'],
-                'role' => $_SESSION['role'],
+                'role' => $_SESSION['role'] ?? 'user',
+                'csrfToken' => $_SESSION[CSRF_TOKEN_NAME] ?? null
             ]);
             return;
         }
+
+        http_response_code(401); // Set HTTP status code to 401
         $this->sendJsonResponse([
             'success' => false,
-            'error' => 'You are not logged in.',]);
+            'error' => 'You are not logged in.',
+            'csrfToken' => $_SESSION[CSRF_TOKEN_NAME] ?? null
+        ]);
     }
 
 }

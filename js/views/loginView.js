@@ -1,5 +1,6 @@
 import {loginUser} from '../api/userApi.js';
 import {navigateTo} from '../router.js';
+import {setupNavbar} from "../partials/navbar.js";
 
 export function renderView() {
     const content = document.getElementById('content');
@@ -44,6 +45,7 @@ export function renderView() {
 
         const result = await loginUser(loginInput.value, passwordInput.value);
         if (result.success) {
+            await setupNavbar();
             navigateTo('/');
         }
         if (result.error) {
