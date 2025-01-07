@@ -99,9 +99,8 @@ class UserController extends BaseController
     }
 
     public function login()
-    {
+{
         $data = json_decode(file_get_contents('php://input'), true);
-        error_log(var_export($data, true));
         $loginInput = $data['loginInput'] ?? '';
         $password = $data['password'] ?? '';
 
@@ -135,6 +134,7 @@ class UserController extends BaseController
         if (!$user) {
             $loginError('Invalid username or password.');
         }
+        session_destroy();
 
         // Verify password
         if (!password_verify($password, $user['password'])) {
@@ -143,6 +143,7 @@ class UserController extends BaseController
 
         session_start();
         $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
 
         $this->sendJsonResponse([
             'success' => true,
@@ -152,7 +153,7 @@ class UserController extends BaseController
 
     public function logout()
     {
-        $this->checkCSRF();
+//        $this->checkCSRF();
         session_unset();
         session_destroy();
         session_start();
@@ -163,7 +164,6 @@ class UserController extends BaseController
 
     public function getCurrentUser()
     {
-        session_start();
         if (isset($_SESSION['username'])) {
             $this->sendJsonResponse([
                 'success' => true,

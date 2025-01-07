@@ -1,11 +1,16 @@
 RewriteEngine On
 #RewriteBase /~krupima3/
 
+# Redirect URLs with trailing slashes to non-trailing versions (if not a directory)
+RewriteCond %{REQUEST_URI} ^(.+)/$
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ %1 [R=301,L]
+
 # If the file or directory exists, do not rewrite
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
 # If not an existing file or directory, then apply your rules
-RewriteRule ^api/(.*)$ index.php?url=$1 [QSA,L]
+RewriteRule ^api/(.*)$ index.php?url=$1 [QSA,B,L]
 RewriteRule . index.html [L]

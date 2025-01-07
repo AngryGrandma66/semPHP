@@ -1,27 +1,60 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\ChatModel;
 use App\Services\ImageUploadService;
 
-class ChatController extends BaseController {
-    public function getChatrooms() {
-        // GET request, no CSRF needed
+class ChatController extends BaseController
+{
+    public function getChatrooms()
+    {
+        $filter = $_GET["filter"];
+        $offset = $_GET["offset"];
         $chatModel = new ChatModel();
-        $chatrooms = $chatModel->getAllChatrooms();
-        // No sanitization needed here if front-end uses textContent
+        $chatrooms = $chatModel->getAllChatrooms($filter);
+        if (count($chatrooms) === 0) {
+
+            $this->sendJsonResponse(['success' => false, 'error' => 'No chatrooms were found']);
+        }
         $this->sendJsonResponse(['success' => true, 'chatrooms' => $chatrooms]);
     }
 
-    public function getMessagesForChatroom($chatroomName) {
+    public function getMessagesForChatroom()
+    {
+        $chatroomName = $_GET["chatroomName"];
+        $messageOffset = $_GET["messageOffset"];
         $chatModel = new ChatModel();
         $messages = $chatModel->getMessagesForChatroom($chatroomName);
-
-        // Data is raw. On the frontend, we use textContent.
+        
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
 
-    public function sendMessage($chatroomName) {
+    public function addChatroom()
+    {
+        $chatroomName = json_decode(file_get_contents('php://input'), true);
+        error_log(var_export($chatroomName, true));
+        if (!isset($chatroomName)) {
+            $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is required']);
+        }
+        if ($chatroomName == "") {
+            $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is required']);
+        }
+        if (strlen($chatroomName) < 3) {
+            $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is too short']);
+        }
+        $chatModel = new ChatModel();
+        if ($chatModel->getChatroomByName($chatroomName)) {
+            $this->sendJsonResponse(['success' => false, 'message' => 'chatroom already exists']);
+        }
+        $chatModel->createChatroom($chatroomName);
+        $this->sendJsonResponse(['success' => true]);
+
+
+    }
+
+    public function sendMessage($chatroomName)
+    {
         $this->checkCSRF();
         if (!isset($_SESSION['user_id'])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Not logged in'], 401);

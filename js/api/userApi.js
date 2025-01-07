@@ -1,16 +1,4 @@
-export let csrfToken = null;
-
-export function setCSRFToken(token) {
-    csrfToken = token;
-}
-
-function getJsonHeaders() {
-    const headers = { 'Content-Type': 'application/json' };
-    if (csrfToken) {
-        headers['X-CSRF-Token'] = csrfToken;
-    }
-    return headers;
-}
+import {getJsonHeaders, setCSRFToken} from "../misc/utils.js";
 
 export async function registerUser(formData) {
     const resp = await fetch('/api/register', {
@@ -37,12 +25,10 @@ export async function loginUser(loginInput, password) {
 
 
 export async function logoutUser() {
-    const headers = {};
-    if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
     const resp = await fetch('/api/logout', {
         method: 'POST',
-        headers,
+        headers: getJsonHeaders(),
         credentials: 'include'
     });
     const data = await resp.json();

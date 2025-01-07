@@ -1,17 +1,36 @@
 <?php
+
 global $routes;
 require_once __DIR__ . '/autoload.php';
+session_start();
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
-$fullUrl = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-$fullUrl = $fullUrl === '' ? 'home' : $fullUrl;
-function matchRoute($url, $method, $routes) {
+$fullUrl =  ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'); // Only remove leading slashes
+error_log(var_export($fullUrl, true));
+function matchRoute($url, $method, $routes): ?array
+{
     foreach ($routes as $pattern => $routeInfo) {
-        $regex = '#^' . str_replace('(.*)', '([^/]*)', trim($pattern, '/')) . '$#';
+        // Replace (.*) with a regex that captures any character except '/'
+        // Support optional parameters by keeping non-capturing groups and optional quantifiers
+        $regex = '#^' . str_replace('/\(\.\*\)/', '([^/]*)', trim($pattern, '/')) . '$#';
+
         if (preg_match($regex, $url, $matches)) {
             if ($method === $routeInfo['method']) {
-                array_shift($matches);
-                return ['controller' => $routeInfo['controller'], 'action' => $routeInfo['action'], 'params' => $matches];
+                array_shift($matches); // Remove the full match
+
+                // Process each parameter
+                $processedParams = array_map(function($param) {
+                    // Decode URL-encoded characters
+                    $decodedParam = urldecode($param);
+                    // Trim spaces and set to '' if empty
+                    return trim($decodedParam) === '' ? '' : $decodedParam;
+                }, $matches);
+
+                return [
+                    'controller' => $routeInfo['controller'],
+                    'action' => $routeInfo['action'],
+                    'params' => $processedParams
+                ];
             } else {
                 return ['error' => 405];
             }

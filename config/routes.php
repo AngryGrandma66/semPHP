@@ -8,8 +8,9 @@ $routes = [
     'api/uploadProfilePicture' => ['controller' => 'UserController', 'action' => 'uploadProfilePicture', 'method' => 'POST'],
 
     // Chat
-    'api/chatrooms' => ['controller' => 'ChatController', 'action' => 'getChatrooms', 'method' => 'GET'],
+    'api/addChatroom' => ['controller' => 'ChatController', 'action' => 'addChatroom', 'method' => 'POST'],
+    'api/getChatrooms' => ['controller' => 'ChatController', 'action' => 'getChatrooms', 'method' => 'GET'],
     'api/chatroom/(.*)/sendMessage' => ['controller' => 'ChatController', 'action' => 'sendMessage', 'method' => 'POST'],
-    'api/chatroom/(.*)' => ['controller' => 'ChatController', 'action' => 'getMessagesForChatroom', 'method' => 'GET'],
+    'api/getChatroomMessages' => ['controller' => 'ChatController', 'action' => 'getMessagesForChatroom', 'method' => 'GET'],
 
 ];

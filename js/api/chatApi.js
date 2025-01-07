@@ -1,15 +1,29 @@
-export async function getChatrooms() {
-    const resp = await fetch('/api/chatrooms', { credentials: 'include' });
+import {csrfToken, getJsonHeaders} from "../misc/utils.js";
+
+export async function getChatrooms(filter,offset) {
+    const resp = await fetch(`/api/getChatrooms?filter=${filter}&offset=${offset}`, {
+        method: 'GET',
+        credentials: 'include',
+    });
     return resp.json();
 }
 
-export async function getMessagesForChatroom(name) {
-    const resp = await fetch(`/api/chatroom/${encodeURIComponent(name)}`, { credentials: 'include' });
+export async function addChatroom(chatroomName) {
+
+    const resp = await fetch(`/api/addChatroom`, {
+        method: 'POST',
+        headers: getJsonHeaders(),
+        body: JSON.stringify(chatroomName),
+        credentials: 'include',
+    })
     return resp.json();
+
 }
 
-// For sending messages, assume we have `csrfToken` set globally
-import { csrfToken } from './userApi.js';
+export async function getMessagesForChatroom(name,messageOffset) {
+    const resp = await fetch(`/api/chatroom?chatroom=${name}&offset=${messageOffset}`, {credentials: 'include'});
+    return resp.json();
+}
 
 export async function sendMessage(chatroomName, message, file) {
     const formData = new FormData();

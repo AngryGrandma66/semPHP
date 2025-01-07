@@ -1,12 +1,39 @@
-// router.js
+// /js/router.js
 
 const routes = {
     '/': 'home',
     '/home': 'home',
     '/login': 'login',
     '/register': 'register',
-    '/chatroom/one': 'chatroom',
+    '/chatroom/{name}': 'chatroom',
+    '/profile/{username}': 'profile',
 };
+function matchRoute(path, routes) {
+    for (const routePattern in routes) {
+        const paramNames = [];
+        // Escape forward slashes for regex
+        let regexPattern = routePattern.replace(/\//g, '\\/');
+
+        // Replace {param} with a capturing group and store param names
+        regexPattern = regexPattern.replace(/{([^}]+)}/g, (match, paramName) => {
+            paramNames.push(paramName);
+            return '([^\\/]+)'; // Capture everything except '/'
+        });
+
+        // Create a RegExp object with start and end anchors
+        const regex = new RegExp(`^${regexPattern}$`);
+        const match = path.match(regex);
+        if (match) {
+            // Extract parameters based on captured groups
+            const params = {};
+            paramNames.forEach((name, index) => {
+                params[name] = decodeURIComponent(match[index + 1]);
+            });
+            return { view: routes[routePattern], params };
+        }
+    }
+    return null;
+}
 
 export function initRouter() {
     window.addEventListener('popstate', handleRoute);
@@ -20,14 +47,29 @@ export function navigateTo(path) {
 
 async function handleRoute() {
     const path = window.location.pathname;
-    const view = routes[path];
+    const match = matchRoute(path, routes);
 
-    if (!view) {
-        // Not Found
+    if (!match) {
         import('./views/notFoundView.js').then(module => module.renderView());
         return;
     }
 
-    // Dynamically import the correct view
-    import(`./views/${view}View.js`).then(module => module.renderView());
+    const { view, params } = match;
+
+    try {
+        const module = await import(`./views/${view}View.js`);
+        if (typeof module.renderView === 'function') {
+            if(params) {
+                module.renderView(params); // Pass params to the view
+            }else{
+                module.renderView();
+            }
+        } else {
+            console.error(`renderView is not a function in ${view}View.js`);
+            import('./views/errorView.js').then(mod => mod.renderView());
+        }
+    } catch (error) {
+        console.error(`Error loading view ${view}View.js:`, error);
+        import('./views/errorView.js').then(mod => mod.renderView());
+    }
 }

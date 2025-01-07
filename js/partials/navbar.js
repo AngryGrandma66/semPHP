@@ -1,5 +1,6 @@
-import {getCurrentUser} from "../api/userApi.js"; // Adjust the path as needed
-
+import {getCurrentUser, logoutUser} from "../api/userApi.js";
+import {navigateTo} from "../router.js"; // Adjust the path as needed
+import {sanitize} from "../misc/utils.js";
 // Variable to store the last known user state
 let lastUserState = {
     loggedIn: null,
@@ -45,8 +46,7 @@ export async function setupNavbar() {
 
             htmlContent += `
                 <a href="/profile"  ">Profile</a>
-                <a href="/logout"  ">Logout</a>
-            `;
+        <button id="logoutButton" style="background: none; color: #fff; border: none; cursor: pointer; font-weight: bold;">Logout</button>            `;
 
             // If the user is an admin or owner, add the Users link
             if (role === 'admin' || role === 'owner') {
@@ -73,6 +73,24 @@ export async function setupNavbar() {
             <a href="/register"  ">Register</a>
         `;
     }
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            try {
+                const result = await logoutUser();
+                if (result.success) {
+                    // Re-render the navbar to reflect logged-out state
+                    await setupNavbar();
+                    // Optionally navigate to home or login
+                    navigateTo('/home'); // Ensure navigateTo is imported
+                } else {
+                    window.alert(`Logout failed: ${result.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                window.alert('An unexpected error occurred during logout.');
+            }
+        });
+    }
 }
 
 /**
@@ -80,8 +98,3 @@ export async function setupNavbar() {
  * @param {string} str - The string to sanitize.
  * @returns {string} - The sanitized string.
  */
-function sanitize(str) {
-    const temp = document.createElement('div');
-    temp.textContent = str;
-    return temp.innerHTML;
-}
