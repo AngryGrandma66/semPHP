@@ -22,14 +22,13 @@ export async function renderView() {
     
     
  <form id="sendMessageForm">
-    <input type="text" name="SendMessageInput" id="SendMessageInput" class="messageSearch" placeholder="sendMessage">
+    <input type="text" name="sendMessageInput" id="sendMessageInput" class="messageSearch" placeholder="sendMessage">
     <span id="senMessageError" class="error"></span>
         <input type="file"
         name="messagePic" 
         accept=".webp, .png, .jpeg, .jpg" 
         id="messagePic"
         alt="profile pic upload"
-        required
         />
         <span id="fileError" class="error"></span>
     <button type="submit">Send</button>
@@ -128,22 +127,28 @@ export async function renderView() {
         });
     }
 
-    function loadMessages(initialLoad = false) {
+
+    async function latestMessages() {
+        const latestMessages = await getLatestMessages(savedTimestamp, chatroomNameFromUrl)
+        if (latestMessages.success) {
+            if (latestMessages.messages.length > 0) {
+                renderMessages(latestMessages.messages);
+                messageOffset += latestMessages.messages.length;
+            }
+            savedTimestamp = Math.floor(Date.now() / 1000)
+        }
+    }
+
+    async function loadMessages(initialLoad = false) {
 
         if (!chatroomNameFromUrl) {
 
             return;
         }
         if (!initialLoad) {
-            const latestMessages = getLatestMessages(savedTimestamp, chatroomNameFromUrl)
-            if (latestMessages.success) {
-                if (latestMessages.messages.length > 0) {
-                    renderMessages(latestMessages.messages);
-                    messageOffset += latestMessages.messages.length;
-                }
-            }
+            await latestMessages()
         }
-        const data = getMessagesForChatroom(!chatroomNameFromUrl, messageOffset)
+        const data = await getMessagesForChatroom(!chatroomNameFromUrl, messageOffset)
         if (data.success) {
             if (data.messages.length > 0) {
                 renderMessages(data.messages, !initialLoad);
@@ -152,7 +157,6 @@ export async function renderView() {
                 loadMoreButton.disabled = true;
                 loadMoreButton.textContent = 'No more messages';
             }
-            savedTimestamp = Math.floor(Date.now() / 1000)
         } else {
             console.error('Error loading messages:', data.error);
         }
@@ -170,7 +174,7 @@ export async function renderView() {
     const fileInput = document.getElementById('messagePic');
     const sendMessageForm = document.getElementById('sendMessageForm');
 
-    sendMessageForm.addEventListener('submit', (e) => {
+    sendMessageForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             if (!chatroomNameFromUrl) {
@@ -184,14 +188,8 @@ export async function renderView() {
 
             const file = fileInput.files?.[0] || null;
 
-            const lastMessage = sendMessage(chatroomNameFromUrl, message, file);
-            if (lastMessage.success) {
-                messageInput.value = '';
-                renderMessages([lastMessage.message]);
-                messageOffset++;
-            } else {
-                alert('Error: ' + lastMessage.error);
-            }
+            await sendMessage(chatroomNameFromUrl, message, file);
+            await latestMessages()
         }
     )
 }

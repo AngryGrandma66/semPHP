@@ -18,7 +18,7 @@ class ChatModel extends BaseModel
         $stmt = $this->db->prepare("
         SELECT name
         FROM chatrooms
-        WHERE name LIKE :filer
+        WHERE name LIKE :filter
         ORDER BY name
         LIMIT :limit OFFSET :offset
     ");
@@ -78,18 +78,17 @@ class ChatModel extends BaseModel
                 ':msg' => $message, // Raw input stored
                 ':img' => $imagePath
             ]);
-            return $this->getMessagesForChatroom($chatroomName,0,1);
+            exit;
         }
 
 
-        $stmt = $this->db->prepare("INSERT INTO chatmessages (userId, chatRoomId, message, pathtoimage) VALUES (:uid, :cid, :msg, :ts, :img)");
+        $stmt = $this->db->prepare("INSERT INTO chatmessages (userId, chatRoomId, message, pathtoimage) VALUES (:uid, :cid, :msg, :img)");
         $stmt->execute([
-            ':uid' => $userId,
+            ':uid' => $userId['id'],
             ':cid' => $chatroom['id'],
             ':msg' => $message,
             ':img' => $imagePath
         ]);
-        return $this->getMessagesForChatroom($chatroomName,0,1);
     }
 
     public function getAllMessagesSince($chatroomName, $timestamp)

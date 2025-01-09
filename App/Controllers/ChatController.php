@@ -71,16 +71,16 @@ class ChatController extends BaseController
         if (!empty($_FILES['message_image']['tmp_name'])) {
             $imageService = new ImageUploadService();
             $uploadRes = $imageService->uploadImage($_FILES['message_image']);
-            if (!$uploadRes['success']) {
+            if (!$uploadRes['status']) {
                 $this->sendJsonResponse($uploadRes, 400);
             }
             $imagePath = $uploadRes['path'];
         }
         $username = $_SESSION["username"] ?? null;
         $chatModel = new ChatModel();
-        $insertedMessage = $chatModel->addMessage($username, $chatroomName, $messageText, $imagePath);
+        $chatModel->addMessage($username, $chatroomName, $messageText, $imagePath);
 
-        $this->sendJsonResponse(['success' => true, 'message' => $insertedMessage]);
+        $this->sendJsonResponse(['success' => true, 'message' => 'message sent']);
     }
 
     public function getLatestMessages()
@@ -90,9 +90,10 @@ class ChatController extends BaseController
         }
         $chatroomName = $_GET["chatroomName"];
         $timestamp = $_GET["timestamp"];
-        $timestamp = date_format($timestamp, 'Y-m-d H:i:s');
+        $formattedTimestamp = date('Y-m-d H:i:s', (int)$timestamp);
         $chatModel = new ChatModel();
-        $messages = $chatModel->getAllMessagesSince($chatroomName, $timestamp);
+        $messages = $chatModel->getAllMessagesSince($chatroomName, $formattedTimestamp);
+        error_log(var_export($messages, true));
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
 }
