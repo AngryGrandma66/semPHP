@@ -26,7 +26,7 @@ class ChatController extends BaseController
         $messageOffset = $_GET["messageOffset"];
         $chatModel = new ChatModel();
         $messages = $chatModel->getMessagesForChatroom($chatroomName);
-        
+
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
 
@@ -42,6 +42,10 @@ class ChatController extends BaseController
         }
         if (strlen($chatroomName) < 3) {
             $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is too short']);
+        }
+
+        if (str_contains($chatroomName, "/")) {
+            $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName cannot contain a slash']);
         }
         $chatModel = new ChatModel();
         if ($chatModel->getChatroomByName($chatroomName)) {
