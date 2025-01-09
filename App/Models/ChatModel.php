@@ -10,58 +10,102 @@ class ChatModel extends BaseModel
             "SELECT * FROM chatrooms WHERE name = :n"
         );
         $stmt->execute([':n' => $name]);
-        return $stmt->fetch(); // returns false if no row found, or associative array if found
+        return $stmt->fetch();
     }
-    public function getAllChatrooms($filer)
+
+    public function getAllChatrooms($filter, $offset, $limit)
     {
-        // Prepare the SQL statement with a WHERE clause using LIKE
         $stmt = $this->db->prepare("
         SELECT name
         FROM chatrooms
         WHERE name LIKE :filer
         ORDER BY name
+        LIMIT :limit OFFSET :offset
     ");
-        $stmt->execute([':filer' => $filer . '%']);
+        $filter = $filter . '%';
 
+        $stmt->bindParam(':filter', $filter);
+        $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+
     public function createChatroom($chatroom)
     {
         $stmt = $this->db->prepare("INSERT INTO chatrooms (name) VALUES (:name)");
         $stmt->execute([':name' => $chatroom]);
     }
 
-    public function getMessagesForChatroom($chatroomName)
+    public function getMessagesForChatroom($chatroomName, $offset, $limit)
     {
         $stmt = $this->db->prepare("
-            SELECT chatMessage.message, chatMessage.timestamp, user.username, chatMessage.image_path
-            FROM chatMessage
-            JOIN user ON chatMessage.userId = user.id
-            JOIN chatroom ON chatMessage.chatRoomId = chatroom.id
-            WHERE chatroom.name = :name
-            ORDER BY chatMessage.timestamp
-        ");
-        $stmt->execute([':name' => $chatroomName]);
+        SELECT chatmessages.message, chatmessages.timestamp, users.username,
+        COALESCE(users.pathtopfp, '/images/assets/anonPfp.png') AS pathtopfp
+        FROM chatmessages
+        LEFT JOIN users ON chatmessages.userId = users.id
+        WHERE chatmessages.chatRoomId = (
+            SELECT id FROM chatrooms WHERE name = :name LIMIT 1
+        )
+        ORDER BY chatmessages.timestamp DESC
+        LIMIT :limit OFFSET :offset
+    ");
+        $stmt->bindParam(':name', $chatroomName);
+        $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function addMessage($userId, $chatroomName, $message, $imagePath)
+    public function addMessage($userName, $chatroomName, $message, $imagePath)
     {
         // First find chatroom id
-        $stmt = $this->db->prepare("SELECT id FROM chatroom WHERE name = :name LIMIT 1");
+        $stmt = $this->db->prepare("SELECT id FROM chatrooms WHERE name = :name LIMIT 1");
         $stmt->execute([':name' => $chatroomName]);
         $chatroom = $stmt->fetch();
         if (!$chatroom) {
-            throw new \Exception("Chatroom not found");
+            die;
         }
 
-        $stmt = $this->db->prepare("INSERT INTO chatMessage (userId, chatRoomId, message, timestamp, image_path) VALUES (:uid, :cid, :msg, :ts, :img)");
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :name LIMIT 1");
+        $stmt->execute([':name' => $userName]);
+        $userId = $stmt->fetch();
+        if (!$userId) {
+            $stmt = $this->db->prepare("INSERT INTO chatmessages ( chatRoomId, message,  pathtoimage) VALUES (:cid, :msg,:img)");
+            $stmt->execute([
+                ':cid' => $chatroom['id'],
+                ':msg' => $message, // Raw input stored
+                ':img' => $imagePath
+            ]);
+            return $this->getMessagesForChatroom($chatroomName,0,1);
+        }
+
+
+        $stmt = $this->db->prepare("INSERT INTO chatmessages (userId, chatRoomId, message, pathtoimage) VALUES (:uid, :cid, :msg, :ts, :img)");
         $stmt->execute([
             ':uid' => $userId,
             ':cid' => $chatroom['id'],
-            ':msg' => $message, // Raw input stored
-            ':ts' => date('Y-m-d H:i:s'),
+            ':msg' => $message,
             ':img' => $imagePath
         ]);
+        return $this->getMessagesForChatroom($chatroomName,0,1);
+    }
+
+    public function getAllMessagesSince($chatroomName, $timestamp)
+    {
+        $stmt = $this->db->prepare("
+        SELECT chatmessages.message, chatmessages.timestamp, users.username,
+        COALESCE(users.pathtopfp, '/images/assets/anonPfp.png') AS pathtopfp
+        FROM chatmessages
+        LEFT JOIN users ON chatmessages.userId = users.id
+        WHERE chatmessages.chatRoomId = (
+            SELECT id FROM chatrooms WHERE name = :name LIMIT 1
+        )
+        AND timestamp >= :timestamp
+        ORDER BY chatmessages.timestamp DESC
+        ");
+        $stmt->execute([':name' => $chatroomName, ':timestamp' => $timestamp]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 }

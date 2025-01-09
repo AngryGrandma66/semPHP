@@ -1,4 +1,4 @@
-import {getJsonHeaders, setCSRFToken} from "../misc/utils.js";
+import {getJsonHeaders } from "../misc/utils.js";
 
 export async function registerUser(formData) {
     const resp = await fetch('/api/register', {
@@ -17,9 +17,6 @@ export async function loginUser(loginInput, password) {
         credentials: 'include'
     });
     const data = await resp.json();
-    // if (data.success && data.csrfToken) {
-    //     setCSRFToken(data.csrfToken);
-    // }
     return data;
 }
 
@@ -43,8 +40,5 @@ export async function logoutUser() {
 export async function getCurrentUser() {
     const resp = await fetch('/api/currentUser', { credentials: 'include' });
     const data = await resp.json();
-    if (data.csrfToken) {
-        setCSRFToken(data.csrfToken);
-    }
     return data;
 }

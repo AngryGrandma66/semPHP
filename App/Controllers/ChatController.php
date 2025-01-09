@@ -9,12 +9,15 @@ class ChatController extends BaseController
 {
     public function getChatrooms()
     {
+        if (!isset ($_GET["filter"]) || !isset($_GET["offset"])) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'Missing filter or offset']);
+            exit;
+        }
         $filter = $_GET["filter"];
         $offset = $_GET["offset"];
         $chatModel = new ChatModel();
-        $chatrooms = $chatModel->getAllChatrooms($filter);
+        $chatrooms = $chatModel->getAllChatrooms($filter, $offset, 20);
         if (count($chatrooms) === 0) {
-
             $this->sendJsonResponse(['success' => false, 'error' => 'No chatrooms were found']);
         }
         $this->sendJsonResponse(['success' => true, 'chatrooms' => $chatrooms]);
@@ -22,10 +25,14 @@ class ChatController extends BaseController
 
     public function getMessagesForChatroom()
     {
+        if (!isset ($_GET["chatroomName"]) || !isset($_GET["messageOffset"])) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'Missing chatroomName or messageOffset']);
+            exit;
+        }
         $chatroomName = $_GET["chatroomName"];
         $messageOffset = $_GET["messageOffset"];
         $chatModel = new ChatModel();
-        $messages = $chatModel->getMessagesForChatroom($chatroomName);
+        $messages = $chatModel->getMessagesForChatroom($chatroomName, $messageOffset, 20);
 
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
@@ -40,10 +47,9 @@ class ChatController extends BaseController
         if ($chatroomName == "") {
             $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is required']);
         }
-        if (strlen($chatroomName) < 3) {
-            $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is too short']);
+        if (strlen($chatroomName) < 3 || strlen($chatroomName) > 100) {
+            $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is too short or too long']);
         }
-
         if (str_contains($chatroomName, "/")) {
             $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName cannot contain a slash']);
         }
@@ -59,27 +65,34 @@ class ChatController extends BaseController
 
     public function sendMessage($chatroomName)
     {
-        $this->checkCSRF();
-        if (!isset($_SESSION['user_id'])) {
-            $this->sendJsonResponse(['success' => false, 'error' => 'Not logged in'], 401);
-        }
-
-        // Form data with message and optional file
         $messageText = $_POST['message'] ?? '';
         $imagePath = null;
 
         if (!empty($_FILES['message_image']['tmp_name'])) {
             $imageService = new ImageUploadService();
-            $uploadRes = $imageService->handleUpload($_FILES['message_image'], false);
+            $uploadRes = $imageService->uploadImage($_FILES['message_image']);
             if (!$uploadRes['success']) {
                 $this->sendJsonResponse($uploadRes, 400);
             }
             $imagePath = $uploadRes['path'];
         }
-
+        $username = $_SESSION["username"] ?? null;
         $chatModel = new ChatModel();
-        $chatModel->addMessage($_SESSION['user_id'], $chatroomName, $messageText, $imagePath);
+        $insertedMessage = $chatModel->addMessage($username, $chatroomName, $messageText, $imagePath);
 
-        $this->sendJsonResponse(['success' => true, 'message' => 'Message sent', 'imagePath' => $imagePath]);
+        $this->sendJsonResponse(['success' => true, 'message' => $insertedMessage]);
+    }
+
+    public function getLatestMessages()
+    {
+        if (!isset($_GET["timestamp"]) || !isset($_GET["chatroomName"])) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'missing parameters']);
+        }
+        $chatroomName = $_GET["chatroomName"];
+        $timestamp = $_GET["timestamp"];
+        $timestamp = date_format($timestamp, 'Y-m-d H:i:s');
+        $chatModel = new ChatModel();
+        $messages = $chatModel->getAllMessagesSince($chatroomName, $timestamp);
+        $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
 }

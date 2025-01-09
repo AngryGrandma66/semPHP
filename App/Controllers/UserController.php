@@ -153,7 +153,6 @@ class UserController extends BaseController
 
     public function logout()
     {
-//        $this->checkCSRF();
         session_unset();
         session_destroy();
         session_start();
@@ -170,7 +169,6 @@ class UserController extends BaseController
                 'logged' => true,
                 'user' => $_SESSION['username'],
                 'role' => $_SESSION['role'] ?? 'user',
-                'csrfToken' => $_SESSION[CSRF_TOKEN_NAME] ?? null
             ]);
             return;
         }
@@ -179,7 +177,6 @@ class UserController extends BaseController
         $this->sendJsonResponse([
             'success' => false,
             'error' => 'You are not logged in.',
-            'csrfToken' => $_SESSION[CSRF_TOKEN_NAME] ?? null
         ]);
     }
 
