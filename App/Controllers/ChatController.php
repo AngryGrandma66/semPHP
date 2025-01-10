@@ -28,11 +28,20 @@ class ChatController extends BaseController
         $filter = $_GET["filter"];
         $offset = $_GET["offset"];
         $chatModel = new ChatModel();
-        $chatrooms = $chatModel->getAllChatrooms($filter, $offset, 20);
+        $chatrooms = $chatModel->getAllChatrooms($filter, $offset, 10);
+
         if (count($chatrooms) === 0) {
             $this->sendJsonResponse(['success' => false, 'error' => 'No chatrooms were found']);
         }
-        $this->sendJsonResponse(['success' => true, 'chatrooms' => $chatrooms]);
+
+        // We also want the total count to implement 1..N pagination
+        $totalCount = $chatModel->getChatroomsCount($filter);
+
+        $this->sendJsonResponse([
+            'success' => true,
+            'chatrooms' => $chatrooms,
+            'total' => $totalCount,  // new
+        ]);
     }
 
     public function getMessagesForChatroom()

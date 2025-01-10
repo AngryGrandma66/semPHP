@@ -1,9 +1,11 @@
+// /js/views/chatroomView.js
+
 import {
     getChatroomByName,
-    getChatrooms,
     getLatestMessages,
     getMessagesForChatroom,
-    sendMessage
+    sendMessage,
+    getChatrooms
 } from "../api/chatApi.js";
 import {renderChatrooms} from "../misc/renderAdds.js";
 
@@ -12,9 +14,10 @@ export async function renderView() {
     let chatroomNameFromUrl = pageURL.substring(pageURL.lastIndexOf('/') + 1);
     const content = document.getElementById('content');
     const title = document.querySelector('title');
-    const exist = await getChatroomByName(chatroomNameFromUrl)
+
+    const exist = await getChatroomByName(chatroomNameFromUrl);
     if (!exist.success) {
-        title.innerText ='not found';
+        title.innerText = 'not found';
         content.innerHTML = '<p>This chatroom does not exist</p>';
         return;
     }
@@ -22,94 +25,141 @@ export async function renderView() {
     title.innerText = chatroomNameFromUrl;
 
     content.innerHTML = `
-    <aside>
-    <input type="text" id="chatroomSearch" name="chatroomSearch" class="chatroomSearch" placeholder="searchbar">
-    <div id="asideChatroomList"></div>
-    </aside>
-    <span id="chatroomTitle"></span>
-    <div class="messageBoxWrapper">
-    <button id="loadMoreButton" class="button">Load more </button>
-    <div class = "messageBox" id="messageBox">
-    
-    
-    
-    </div>
-    
-    
-    
-    
- <form id="sendMessageForm">
-    <input type="text" name="sendMessageInput" id="sendMessageInput" class="messageSearch" placeholder="sendMessage">
-    <span id="senMessageError" class="error"></span>
-        <input type="file"
-        name="messagePic" 
-        accept=".webp, .png, .jpeg, .jpg" 
-        id="messagePic"
-        alt="profile pic upload"
-        />
-        <span id="fileError" class="error"></span>
-    <button type="submit">Send</button>
-    </form>
-    </div>
-   
-    
-    
-    
-    
-    
-    
+        <aside>
+            <input type="text" id="chatroomSearch" 
+                   name="chatroomSearch" class="chatroomSearch" placeholder="searchbar">
+            <div id="asideChatroomList"></div>
+            <div id="asideChatroomPaginationBar" class="pagination-bar"></div>
+        </aside>
+
+        <span id="chatroomTitle"></span>
+        
+        <div class="messageBoxWrapper">
+            <button id="loadMoreButton" class="button">Load more</button>
+            <div class="messageBox" id="messageBox"></div>
+            
+            <form id="sendMessageForm">
+                <input type="text" name="sendMessageInput" id="sendMessageInput" 
+                       class="messageSearch" placeholder="sendMessage">
+                <span id="senMessageError" class="error"></span>
+                
+                <input type="file"
+                       name="messagePic" 
+                       accept=".webp, .png, .jpeg, .jpg" 
+                       id="messagePic"
+                       alt="profile pic upload"
+                />
+                <span id="fileError" class="error"></span>
+                <button type="submit">Send</button>
+            </form>
+        </div>
     `;
-    const chatroomList = document.getElementById('asideChatroomList');
-    await getChatrooms('', 0)
-        .then(data => {
-            if (data.success) {
-                renderChatrooms(chatroomList, data.chatrooms);
-            } else {
-                chatroomList.innerHTML = '<p>No chatrooms found.</p>';
+
+    // references
+    const chatroomList   = document.getElementById('asideChatroomList');
+    const searchBar      = document.getElementById('chatroomSearch');
+    const paginationBar  = document.getElementById('asideChatroomPaginationBar');
+
+    // We'll implement a local pagination for the aside
+    let currentFilter = '';
+    let currentPage   = 1;
+    let totalPages    = 1;
+
+    async function loadAsideChatrooms(page, filter) {
+        chatroomList.innerHTML = '';
+
+        const resp = await getChatrooms(filter, page);
+        if (!resp.success) {
+            chatroomList.innerHTML = `<p>${resp.error || 'No chatrooms found.'}</p>`;
+            paginationBar.innerHTML = '';
+            return;
+        }
+
+        renderChatrooms(chatroomList, resp.chatrooms);
+
+        totalPages = Math.ceil(resp.total / 20);
+        renderPagination(page, totalPages);
+    }
+
+    function renderPagination(page, total) {
+        paginationBar.innerHTML = '';
+
+        // Prev
+        if (page > 1) {
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = 'Prev';
+            prevBtn.addEventListener('click', () => {
+                currentPage = page - 1;
+                loadAsideChatrooms(currentPage, currentFilter);
+            });
+            paginationBar.appendChild(prevBtn);
+        }
+
+        // 1..total
+        for (let p = 1; p <= total; p++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = p.toString();
+            if (p === page) {
+                pageBtn.disabled = true;
             }
-        })
+            pageBtn.addEventListener('click', () => {
+                currentPage = p;
+                loadAsideChatrooms(currentPage, currentFilter);
+            });
+            paginationBar.appendChild(pageBtn);
+        }
 
-    const searchBar = document.getElementById('chatroomSearch')
+        // Next
+        if (page < total) {
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = 'Next';
+            nextBtn.addEventListener('click', () => {
+                currentPage = page + 1;
+                loadAsideChatrooms(currentPage, currentFilter);
+            });
+            paginationBar.appendChild(nextBtn);
+        }
+    }
+
+    // INITIAL LOAD
+    loadAsideChatrooms(currentPage, currentFilter);
+
+    // SEARCH BAR
     searchBar.addEventListener('keyup', () => {
-        getChatrooms(searchBar.value, 0)
-            .then(data => {
-                    if (data.success) {
-                        renderChatrooms(chatroomList, data.chatrooms);
-                    } else {
-                        chatroomList.innerHTML = '<p>No chatrooms found.</p>';
-                    }
-                }
-            )
-    })
-    const messageBox = document.getElementById('messageBox');
-    let messageOffset = 0
-    let savedTimestamp = Math.floor(Date.now() / 1000)
+        currentFilter = searchBar.value;
+        currentPage = 1;
+        loadAsideChatrooms(currentPage, currentFilter);
+    });
 
+    //-------------------------------------------------------
+    // *** The rest of your Chatroom logic remains the same. ***
+    //-------------------------------------------------------
+    const messageBox = document.getElementById('messageBox');
+    let messageOffset = 0;
+    let savedTimestamp = Math.floor(Date.now() / 1000);
 
     async function latestMessages() {
-        const latestMessages = await getLatestMessages(savedTimestamp, chatroomNameFromUrl)
+        const latestMessages = await getLatestMessages(savedTimestamp, chatroomNameFromUrl);
         if (latestMessages.success) {
             if (latestMessages.messages.length > 0) {
-                renderMessages(messageBox,latestMessages.messages);
+                renderMessages(messageBox, latestMessages.messages);
                 messageOffset += latestMessages.messages.length;
             }
-            savedTimestamp = Math.floor(Date.now() / 1000)
+            savedTimestamp = Math.floor(Date.now() / 1000);
         }
     }
 
     async function loadMessages(prepend = false) {
-
         if (!chatroomNameFromUrl) {
-
             return;
         }
         if (!prepend) {
-            await latestMessages()
+            await latestMessages();
         }
-        const data = await getMessagesForChatroom(chatroomNameFromUrl, messageOffset)
+        const data = await getMessagesForChatroom(chatroomNameFromUrl, messageOffset);
         if (data.success) {
             if (data.messages.length > 0) {
-                renderMessages(messageBox,data.messages, !prepend);
+                renderMessages(messageBox, data.messages, !prepend);
                 messageOffset += data.messages.length;
             } else {
                 loadMoreButton.disabled = true;
@@ -121,40 +171,34 @@ export async function renderView() {
     }
 
     const loadMoreButton = document.getElementById('loadMoreButton');
-
-
     loadMoreButton.addEventListener('click', function () {
         loadMessages();
-    })
-
+    });
 
     const messageInput = document.getElementById('sendMessageInput');
     const fileInput = document.getElementById('messagePic');
     const sendMessageForm = document.getElementById('sendMessageForm');
 
     sendMessageForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            if (!chatroomNameFromUrl) {
-                return;
-            }
-
-            const message = messageInput.value.trim();
-            if (message === '') {
-                return;
-            }
-
-            const file = fileInput.files?.[0] || null;
-
-            await sendMessage(chatroomNameFromUrl, message, file);
-            messageInput.value = '';
-            fileInput.value = '';
-
-            savedTimestamp = Math.floor(Date.now() / 1000)
-            await latestMessages()
+        e.preventDefault();
+        if (!chatroomNameFromUrl) {
+            return;
         }
-    )
-    await loadMessages(false)
+
+        const message = messageInput.value.trim();
+        if (message === '') {
+            return;
+        }
+
+        const file = fileInput.files?.[0] || null;
+        await sendMessage(chatroomNameFromUrl, message, file);
+        messageInput.value = '';
+        fileInput.value = '';
+        savedTimestamp = Math.floor(Date.now() / 1000);
+        await latestMessages();
+    });
+
+    await loadMessages(false);
 }
 
 function renderMessages(root,messages, prepend = false) {

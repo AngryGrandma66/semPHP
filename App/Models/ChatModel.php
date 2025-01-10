@@ -110,4 +110,20 @@ class ChatModel extends BaseModel
         $stmt->execute([':name' => $chatroomName, ':timestamp' => $timestamp]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getChatroomsCount($filter = '')
+    {
+        // We'll do: SELECT COUNT(*) FROM chatrooms WHERE name LIKE :filter
+        $stmt = $this->db->prepare("
+        SELECT COUNT(*) as total
+        FROM chatrooms
+        WHERE name LIKE :filter
+    ");
+
+        $filter = $filter . '%';
+        $stmt->bindValue(':filter', $filter );
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return (int)$row['total'];
+    }
 }

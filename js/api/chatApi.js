@@ -1,13 +1,14 @@
 import {getJsonHeaders} from "../misc/utils.js";
 
-export async function getChatrooms(filter, offset) {
-    const resp = await fetch(`/api/getChatrooms?filter=${filter}&offset=${offset}`, {
+export async function getChatrooms(filter, page = 1) {
+    const offset = (page - 1) * 10;
+    const resp = await fetch(`/api/getChatrooms?filter=${encodeURIComponent(filter)}&offset=${offset}`, {
         method: 'GET',
         credentials: 'include',
     });
     return resp.json();
+    // The response now includes: { success: true, chatrooms: [...], total: 123 }
 }
-
 export async function addChatroom(chatroomName) {
 
     const resp = await fetch(`/api/addChatroom`, {
