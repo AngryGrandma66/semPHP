@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use PDO;
+
 class ChatModel extends BaseModel
 {
     public function getChatroomByName($name)
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM chatrooms WHERE name = :n"
+            "SELECT name FROM chatrooms WHERE name = :n"
         );
         $stmt->execute([':n' => $name]);
-        return $stmt->fetch();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getAllChatrooms($filter, $offset, $limit)
@@ -28,7 +30,7 @@ class ChatModel extends BaseModel
         $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function createChatroom($chatroom)
@@ -40,8 +42,8 @@ class ChatModel extends BaseModel
     public function getMessagesForChatroom($chatroomName, $offset, $limit)
     {
         $stmt = $this->db->prepare("
-        SELECT chatmessages.message, chatmessages.timestamp, users.username,
-        COALESCE(users.pathtopfp, '/images/assets/anonPfp.png') AS pathtopfp
+        SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage,
+        COALESCE(users.pathtopfp, '/images/assets/anonPfp.webp') AS pathtopfp
         FROM chatmessages
         LEFT JOIN users ON chatmessages.userId = users.id
         WHERE chatmessages.chatRoomId = (
@@ -55,7 +57,7 @@ class ChatModel extends BaseModel
         $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
 
         $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function addMessage($userName, $chatroomName, $message, $imagePath)
@@ -63,14 +65,14 @@ class ChatModel extends BaseModel
         // First find chatroom id
         $stmt = $this->db->prepare("SELECT id FROM chatrooms WHERE name = :name LIMIT 1");
         $stmt->execute([':name' => $chatroomName]);
-        $chatroom = $stmt->fetch();
+        $chatroom = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$chatroom) {
-            die;
+            return false;
         }
 
         $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :name LIMIT 1");
         $stmt->execute([':name' => $userName]);
-        $userId = $stmt->fetch();
+        $userId = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$userId) {
             $stmt = $this->db->prepare("INSERT INTO chatmessages ( chatRoomId, message,  pathtoimage) VALUES (:cid, :msg,:img)");
             $stmt->execute([
@@ -78,7 +80,7 @@ class ChatModel extends BaseModel
                 ':msg' => $message, // Raw input stored
                 ':img' => $imagePath
             ]);
-            exit;
+            return true;
         }
 
 
@@ -89,13 +91,14 @@ class ChatModel extends BaseModel
             ':msg' => $message,
             ':img' => $imagePath
         ]);
+        return true;
     }
 
     public function getAllMessagesSince($chatroomName, $timestamp)
     {
         $stmt = $this->db->prepare("
-        SELECT chatmessages.message, chatmessages.timestamp, users.username,
-        COALESCE(users.pathtopfp, '/images/assets/anonPfp.png') AS pathtopfp
+        SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage,
+        COALESCE(users.pathtopfp, '/images/assets/anonPfp.webp') AS pathtopfp
         FROM chatmessages
         LEFT JOIN users ON chatmessages.userId = users.id
         WHERE chatmessages.chatRoomId = (
@@ -105,6 +108,6 @@ class ChatModel extends BaseModel
         ORDER BY chatmessages.timestamp DESC
         ");
         $stmt->execute([':name' => $chatroomName, ':timestamp' => $timestamp]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -1,4 +1,4 @@
-import {getJsonHeaders } from "../misc/utils.js";
+import {getJsonHeaders} from "../misc/utils.js";
 
 export async function registerUser(formData) {
     const resp = await fetch('/api/register', {
@@ -16,8 +16,7 @@ export async function loginUser(loginInput, password) {
         body: JSON.stringify({ loginInput, password }),
         credentials: 'include'
     });
-    const data = await resp.json();
-    return data;
+    return await resp.json();
 }
 
 
@@ -38,7 +37,19 @@ export async function logoutUser() {
     return data;
 }
 export async function getCurrentUser() {
-    const resp = await fetch('/api/currentUser', { credentials: 'include' });
-    const data = await resp.json();
-    return data;
+    const resp = await fetch('/api/currentUser', {
+        method: 'GET',
+        credentials: 'include'
+    });
+
+    return await resp.json();
+}
+
+
+export async function getUserByName(name) {
+   const resp = await fetch(`/api/userByName?username=${encodeURIComponent(name)}`, {
+       method: 'GET',
+       credentials: 'include'
+   });
+   return await resp.json();
 }

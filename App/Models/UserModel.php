@@ -22,32 +22,29 @@ class UserModel extends BaseModel
     public function getUserByUsername($username)
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM users WHERE username = :u"
+            "SELECT username,email,role,pathtopfp FROM users WHERE username = :u"
         );
         $stmt->execute([':u' => $username]);
-        return $stmt->fetch(); // returns false if no row found, or associative array if found
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC); // returns false if no row found, or associative array if found
     }
 
-    // Get user by email
-    public function getUserByEmail($email)
+    public function getUserByUsernameValidation($username)
     {
         $stmt = $this->db->prepare(
-            "SELECT * FROM users WHERE email = :e"
+            "SELECT username,password,role FROM users WHERE username = :u"
+        );
+        $stmt->execute([':u' => $username]);
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC); // returns false if no row found, or associative array if found
+    }
+    // Get user by email
+    public function getUserByEmailValidation($email)
+    {
+        $stmt = $this->db->prepare(
+            "SELECT email,password,role FROM users WHERE email = :e"
         );
         $stmt->execute([':e' => $email]);
-        return $stmt->fetch(); // returns false if no row found, or associative array if found
-    }
-
-    public function getUserById($id)
-    {
-        $stmt = $this->db->prepare("SELECT id, username, profile_picture FROM users WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        return $stmt->fetch();
-    }
-
-    public function updateProfilePicture($userId, $path)
-    {
-        $stmt = $this->db->prepare("UPDATE users SET profile_picture = :p WHERE id = :id");
-        $stmt->execute([':p' => $path, ':id' => $userId]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC); // returns false if no row found, or associative array if found
     }
 }

@@ -36,6 +36,8 @@ export function renderView() {
     </form>   
    `;
 
+    const title = document.querySelector('title');
+    title.innerText = 'login';
  const form = document.getElementById('loginForm');
 
     form.addEventListener('submit', async (e) => {

@@ -72,7 +72,8 @@ export function renderView() {
       <button type="submit">Register</button>
     </form>
   `;
-
+    const title = document.querySelector('title');
+    title.innerText = 'Register';
     const form = document.getElementById('registerForm');
 
     form.addEventListener('submit', async (e) => {

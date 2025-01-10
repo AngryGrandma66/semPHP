@@ -7,6 +7,18 @@ use App\Services\ImageUploadService;
 
 class ChatController extends BaseController
 {
+    public function chatroomByName(){
+        if(!isset($_GET['name'])){
+            $this->sendJsonResponse(['success'=> false, 'error'=> 'This chatroom does not exist']);
+        }
+        $name = $_GET['name'];
+        $chatModel = new ChatModel();
+        if($chatModel->getChatroomByName($name)){
+            $this->sendJsonResponse(['success'=> true, 'message'=> 'This chatroom exists']);
+        }
+        $this->sendJsonResponse(['success'=> false, 'error'=> 'This chatroom does not exist']);
+
+    }
     public function getChatrooms()
     {
         if (!isset ($_GET["filter"]) || !isset($_GET["offset"])) {
@@ -25,29 +37,36 @@ class ChatController extends BaseController
 
     public function getMessagesForChatroom()
     {
-        if (!isset ($_GET["chatroomName"]) || !isset($_GET["messageOffset"])) {
+        if (!isset ($_GET["chatroom"]) || !isset($_GET["offset"])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing chatroomName or messageOffset']);
             exit;
         }
-        $chatroomName = $_GET["chatroomName"];
-        $messageOffset = $_GET["messageOffset"];
+        $chatroomName = $_GET["chatroom"];
+        $messageOffset = $_GET["offset"];
         $chatModel = new ChatModel();
         $messages = $chatModel->getMessagesForChatroom($chatroomName, $messageOffset, 20);
-
+        foreach ($messages as &$message) {
+            $message['timestamp'] = $this->dateConversion($message['timestamp']);
+        }
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
 
     public function addChatroom()
     {
         $chatroomName = json_decode(file_get_contents('php://input'), true);
-        error_log(var_export($chatroomName, true));
+        if (!isset($_SESSION['username'])) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'You are not logged in']);
+        }
+        if (!strcmp($_SESSION['role'],'owner')&&!strcmp($_SESSION['role'],'admin')) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'You do not have permission']);
+        }
         if (!isset($chatroomName)) {
             $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is required']);
         }
         if ($chatroomName == "") {
             $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is required']);
         }
-        if (strlen($chatroomName) < 3 || strlen($chatroomName) > 100) {
+        if (strlen($chatroomName) < 3 || strlen($chatroomName) > 50) {
             $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is too short or too long']);
         }
         if (str_contains($chatroomName, "/")) {
@@ -59,8 +78,6 @@ class ChatController extends BaseController
         }
         $chatModel->createChatroom($chatroomName);
         $this->sendJsonResponse(['success' => true]);
-
-
     }
 
     public function sendMessage($chatroomName)
@@ -78,9 +95,12 @@ class ChatController extends BaseController
         }
         $username = $_SESSION["username"] ?? null;
         $chatModel = new ChatModel();
-        $chatModel->addMessage($username, $chatroomName, $messageText, $imagePath);
+        $addMessageStatus = $chatModel->addMessage($username, $chatroomName, $messageText, $imagePath);
 
-        $this->sendJsonResponse(['success' => true, 'message' => 'message sent']);
+        if ($addMessageStatus) {
+            $this->sendJsonResponse(['success' => true, 'message' => 'message sent']);
+        }
+        $this->sendJsonResponse(['success' => false, 'message' => 'message not sent']);
     }
 
     public function getLatestMessages()
@@ -90,10 +110,14 @@ class ChatController extends BaseController
         }
         $chatroomName = $_GET["chatroomName"];
         $timestamp = $_GET["timestamp"];
-        $formattedTimestamp = date('Y-m-d H:i:s', (int)$timestamp);
+        $timestamp = (int)$timestamp;
+        $timestamp_plus_one_hour = $timestamp + 3600;
+        $formattedTimestamp = date('Y-m-d H:i:s', $timestamp_plus_one_hour);
         $chatModel = new ChatModel();
         $messages = $chatModel->getAllMessagesSince($chatroomName, $formattedTimestamp);
-        error_log(var_export($messages, true));
+        foreach ($messages as &$message) {
+            $message['timestamp'] = $this->dateConversion($message['timestamp']);
+        }
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
 }

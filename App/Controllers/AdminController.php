@@ -6,5 +6,9 @@ use App\Controllers\BaseController;
 
 class AdminController extends BaseController
 {
+    public function getAllUsers()
+    {
 
+
+    }
 }

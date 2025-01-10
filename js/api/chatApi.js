@@ -21,7 +21,7 @@ export async function addChatroom(chatroomName) {
 }
 
 export async function getMessagesForChatroom(name, messageOffset) {
-    const resp = await fetch(`/api/chatroom?chatroom=${name}&offset=${messageOffset}`, {
+    const resp = await fetch(`/api/getChatroomMessages?chatroom=${encodeURIComponent(name)}&offset=${messageOffset}`, {
         method: 'GET',
         credentials: 'include'
     });
@@ -44,7 +44,16 @@ export async function sendMessage(chatroomName, message, file) {
     return resp.json();
 }
 export async function getLatestMessages(timestamp, chatroomName) {
-    const resp = await fetch(`/api/getLatestMessages?timestamp=${timestamp}&chatroomName=${chatroomName}`, {
+    const resp = await fetch(`/api/getLatestMessages?timestamp=${timestamp}&chatroomName=${encodeURIComponent(chatroomName)}`, {
+        method: 'GET',
+        credentials: 'include'
+    })
+    return resp.json();
+}
+
+
+export async function getChatroomByName(chatroomName) {
+    const resp = await fetch(`/api/getChatroomByName?name=${encodeURIComponent(chatroomName)}`, {
         method: 'GET',
         credentials: 'include'
     })

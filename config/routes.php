@@ -6,6 +6,7 @@ $routes = [
     'api/logout' => ['controller' => 'UserController', 'action' => 'logout', 'method' => 'POST'],
     'api/currentUser' => ['controller' => 'UserController', 'action' => 'getCurrentUser', 'method' => 'GET'],
     'api/uploadProfilePicture' => ['controller' => 'UserController', 'action' => 'uploadProfilePicture', 'method' => 'POST'],
+    'api/userByName' => ['controller' => 'UserController', 'action' => 'userByName', 'method' => 'GET'],
 
     // Chat
     'api/addChatroom' => ['controller' => 'ChatController', 'action' => 'addChatroom', 'method' => 'POST'],
@@ -13,5 +14,6 @@ $routes = [
     'api/chatroom/(.*)/sendMessage' => ['controller' => 'ChatController', 'action' => 'sendMessage', 'method' => 'POST'],
     'api/getChatroomMessages' => ['controller' => 'ChatController', 'action' => 'getMessagesForChatroom', 'method' => 'GET'],
     'api/getLatestMessages' => ['controller' => 'ChatController', 'action' => 'getLatestMessages', 'method' => 'GET'],
+    'api/getChatroomByName' => ['controller' => 'ChatController', 'action' => 'chatroomByName', 'method' => 'GET'],
 
 ];

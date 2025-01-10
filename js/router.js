@@ -7,6 +7,7 @@ const routes = {
     '/register': 'register',
     '/chatroom/{name}': 'chatroom',
     '/profile/{username}': 'profile',
+    '/users': 'users',
 };
 function matchRoute(path, routes) {
     for (const routePattern in routes) {

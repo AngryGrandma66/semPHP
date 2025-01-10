@@ -1,14 +1,12 @@
 import {getCurrentUser, logoutUser} from "../api/userApi.js";
-import {navigateTo} from "../router.js"; // Adjust the path as needed
-import {sanitize} from "../misc/utils.js";
-// Variable to store the last known user state
+import {navigateTo} from "../router.js";
+
 let lastUserState = {
     loggedIn: null,
     username: null,
     role: null
 };
 
-// Function to setup the navbar
 export async function setupNavbar() {
     const navbar = document.getElementById('navbar');
 
@@ -29,49 +27,63 @@ export async function setupNavbar() {
             lastUserState.role !== newUserState.role;
 
         if (!stateChanged) {
-            // No change in user state; no need to update the navbar
             return;
         }
+
+        navbar.innerHTML = '';
 
         // Update the last known user state
         lastUserState = newUserState;
 
-        // Start building the HTML content
-        let htmlContent = `
-            <a href="/home"  ">Home</a>
-        `;
+
+        const homeLink = document.createElement('a');
+        homeLink.href = '/home';
+        homeLink.textContent = 'Home';
+        homeLink.classList.add('navbar-link');
+        navbar.appendChild(homeLink);
 
         if (newUserState.loggedIn) {
-            const {username, role} = newUserState;
 
-            htmlContent += `
-                <a href="/profile"  ">Profile</a>
-        <button id="logoutButton" style="background: none; color: #fff; border: none; cursor: pointer; font-weight: bold;">Logout</button>            `;
+            const profileLink = document.createElement('a');
+            profileLink.href = '/profile/' + encodeURIComponent(newUserState.username);
+            profileLink.textContent = newUserState.username;
+            profileLink.classList.add('navbar-link');
+            navbar.appendChild(profileLink);
 
-            // If the user is an admin or owner, add the Users link
-            if (role === 'admin' || role === 'owner') {
-                htmlContent += `<a href="/users"  ">Users</a>`;
+            if (newUserState.role === "admin" || newUserState.role === "owner") {
+
+                const usersLink = document.createElement('a');
+                usersLink.href = '/users';
+                usersLink.textContent = 'Users';
+                usersLink.classList.add('navbar-link');
+                navbar.appendChild(usersLink);
             }
+            const logoutButton = document.createElement('a');
+            logoutButton.id = 'logoutButton'
+            logoutButton.textContent = 'Logout';
+            logoutButton.classList.add('navbar-link');
+            navbar.appendChild(logoutButton);
 
-            // Display the username
-            htmlContent += `<span ">Welcome, ${sanitize(username)}</span>`;
         } else {
-            // User is not logged in; show Login and Register links
-            htmlContent += `
-                <a href="/login"  ">Login</a>
-                <a href="/register"  ">Register</a>
-            `;
-        }
 
-        // Inject the constructed HTML into the navbar
-        navbar.innerHTML = htmlContent;
+            const loginLink = document.createElement('a');
+            loginLink.href = '/login';
+            loginLink.textContent = 'Login';
+            loginLink.classList.add('navbar-link');
+            navbar.appendChild(loginLink);
+
+            const registerLink = document.createElement('a');
+            registerLink.href = '/register';
+            registerLink.textContent = 'Register';
+            registerLink.classList.add('navbar-link');
+            navbar.appendChild(registerLink);
+        }
     } catch (error) {
-        console.error('Error fetching current user:', error);
-        // In case of error, default to showing Login and Register
-        navbar.innerHTML = `
-<!--            <a href="/login"  ">Login</a>-->
-            <a href="/register"  ">Register</a>
-        `;
+        const registerLink = document.createElement('a');
+        registerLink.href = '/register';
+        registerLink.textContent = 'Register';
+        registerLink.classList.add('navbar-link');
+        navbar.appendChild(registerLink);
     }
     const logoutButton = document.getElementById('logoutButton');
     if (logoutButton) {
@@ -79,9 +91,9 @@ export async function setupNavbar() {
             try {
                 const result = await logoutUser();
                 if (result.success) {
-                    // Re-render the navbar to reflect logged-out state
+
                     await setupNavbar();
-                    // Optionally navigate to home or login
+
                     navigateTo('/home'); // Ensure navigateTo is imported
                 } else {
                     window.alert(`Logout failed: ${result.error || 'Unknown error'}`);
@@ -93,8 +105,3 @@ export async function setupNavbar() {
     }
 }
 
-/**
- * Utility function to sanitize user input to prevent XSS attacks.
- * @param {string} str - The string to sanitize.
- * @returns {string} - The sanitized string.
- */

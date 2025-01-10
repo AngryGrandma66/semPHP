@@ -6,6 +6,5 @@ export function sanitize(str) {
 
 
 export function getJsonHeaders() {
-    const headers = { 'Content-Type': 'application/json' };
-    return headers;
+    return {'Content-Type': 'application/json'};
 }

@@ -14,9 +14,12 @@ export async function renderView() {
     </div>
     `
 
+    const title = document.querySelector('title');
+    title.innerText = 'home';
+
     const displayedChatrooms = document.getElementById('homeChatroomList');
     const userData = await getCurrentUser();
-    await getChatrooms('',0)
+    getChatrooms('',0)
         .then(data => {
             if (data.success) {
                 renderChatrooms(displayedChatrooms, data.chatrooms);
@@ -30,6 +33,7 @@ export async function renderView() {
         document.getElementById('homeLoggedInUser').textContent = "You are not logged in";
     }
 
+    console.log(userData);
     const searchBar = document.getElementById('homeChatroomSearch')
     searchBar.addEventListener('keyup', () => {
         getChatrooms(searchBar.value,0)
@@ -44,7 +48,6 @@ export async function renderView() {
     })
     if (userData.success) {
         if (userData.role === 'admin' || userData.role === 'owner') {
-            console.log(userData);
             const addChatroomForm = document.createElement('form')
             addChatroomForm.id = 'addChatroomForm';
             addChatroomForm.classList.add('addChatroom');
@@ -63,6 +66,15 @@ export async function renderView() {
                         if (data.success) {
                             chatroomInput.value = '';
                             inputMessage.innerText = 'Chat room added successfully!';
+                            getChatrooms(searchBar.value,0)
+                                .then(data => {
+                                        if (data.success) {
+                                            renderChatrooms(displayedChatrooms, data.chatrooms);
+                                        } else {
+                                            displayedChatrooms.innerHTML = '<p>No chatrooms found.</p>';
+                                        }
+                                    }
+                                )
                         } else {
                             inputMessage.innerText = 'error: ' + data.message;
                         }

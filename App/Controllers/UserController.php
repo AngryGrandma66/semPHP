@@ -80,7 +80,7 @@ class UserController extends BaseController
         if ($userModel->getUserByUsername($username)) {
             $errors['username'] = 'Username is already taken.';
         }
-        if ($userModel->getUserByEmail($email)) {
+        if ($userModel->getUserByEmailValidation($email)) {
             $errors['email'] = 'Email is already in use.';
         }
         if (!empty($errors)) {
@@ -99,7 +99,7 @@ class UserController extends BaseController
     }
 
     public function login()
-{
+    {
         $data = json_decode(file_get_contents('php://input'), true);
         $loginInput = $data['loginInput'] ?? '';
         $password = $data['password'] ?? '';
@@ -125,10 +125,10 @@ class UserController extends BaseController
         $userModel = new UserModel();
         if (filter_var($loginInput, FILTER_VALIDATE_EMAIL)) {
             // It's an email
-            $user = $userModel->getUserByEmail($loginInput);
+            $user = $userModel->getUserByEmailValidation($loginInput);
         } else {
             // It's a username
-            $user = $userModel->getUserByUsername($loginInput);
+            $user = $userModel->getUserByUsernameValidation($loginInput);
         }
 
         if (!$user) {
@@ -159,7 +159,6 @@ class UserController extends BaseController
         $this->sendJsonResponse(['success' => true, 'message' => 'Logged out']);
     }
 
-// /App/Controllers/UserController.php
 
     public function getCurrentUser()
     {
@@ -173,11 +172,27 @@ class UserController extends BaseController
             return;
         }
 
-        http_response_code(401); // Set HTTP status code to 401
         $this->sendJsonResponse([
             'success' => false,
             'error' => 'You are not logged in.',
         ]);
+    }
+
+
+    public function userByName()
+    {
+        if (!isset($_GET['username'])){
+          $this->sendJsonResponse(['success' => false,'message'=>'No name in GET'],400);
+        }
+        $username = $_GET['username'];
+        $userModel = new UserModel();
+        $user = $userModel->getUserByUsername($username);
+        error_log(var_export($user, true));
+        if (!$user) {
+            $this->sendJsonResponse(['success' => false, 'error'=>'This user does not exist'],404);
+        }
+        $this->sendJsonResponse(['success' => true, 'user' => $user]);
+
     }
 
 }

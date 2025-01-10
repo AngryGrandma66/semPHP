@@ -49,17 +49,6 @@ class ImageUploadService
         $subDirectory = $isProfilePicture ? 'profilePictures' : 'messageUploads';
         $targetDirectory = $userUploadsDir . '/' . $subDirectory;
 
-        // Create the target directory if it doesn't exist
-//        if (!is_dir($targetDirectory)) {
-//            if (!mkdir($targetDirectory, 0777, true) && !is_dir($targetDirectory)) {
-//                imagedestroy($sourceImage);
-//                imagedestroy($scaledImage);
-//                return [
-//                    'status'  => 'error',
-//                    'message' => 'Failed to create target directory.'
-//                ];
-//            }
-//        }
 
         $prefix = $isProfilePicture ? 'pfp_' : 'msg_';
         $uniqueFilename = uniqid($prefix, true) . '.webp';
@@ -103,7 +92,7 @@ class ImageUploadService
             $newWidth  = 64;
             $newHeight = 64;
         } else {
-            $maxDimension = 800;
+            $maxDimension = 400;
             $aspectRatio  = $originalWidth / $originalHeight;
 
             if ($originalWidth > $originalHeight) {
