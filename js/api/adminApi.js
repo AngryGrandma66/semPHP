@@ -1,3 +1,5 @@
+import {getJsonHeaders} from "../misc/utils.js";
+
 export async function getAllUsers(page = 1) {
     const offset = (page - 1) * 8;
     const resp = await fetch(`/api/getAllUsers?offset=${offset}`, {
