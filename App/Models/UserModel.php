@@ -47,4 +47,35 @@ class UserModel extends BaseModel
         $stmt->execute([':e' => $email]);
         return $stmt->fetch(\PDO::FETCH_ASSOC); // returns false if no row found, or associative array if found
     }
+
+    public function getAllUsers($offset, $limit)
+    {
+        $stmt = $this->db->prepare("
+        SELECT username, email, role
+        FROM users
+        ORDER BY username
+        LIMIT :limit OFFSET :offset
+    ");
+        $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getUsersCount()
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) AS total FROM users");
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return (int)$row['total'];
+    }
+    public function updateUserRole($username, $role)
+    {
+        $stmt = $this->db->prepare("UPDATE users SET role = :role WHERE username = :u");
+        $stmt->execute([
+            ':role' => $role,
+            ':u' => $username
+        ]);
+    }
+
 }

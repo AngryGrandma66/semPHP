@@ -16,4 +16,7 @@ $routes = [
     'api/getLatestMessages' => ['controller' => 'ChatController', 'action' => 'getLatestMessages', 'method' => 'GET'],
     'api/getChatroomByName' => ['controller' => 'ChatController', 'action' => 'chatroomByName', 'method' => 'GET'],
 
+    //admin
+    'api/getAllUsers' => ['controller' => 'AdminController', 'action' => 'getAllUsers', 'method' => 'GET'],
+    'api/updateUserRole' => ['controller' => 'AdminController', 'action' => 'updateUserRole', 'method' => 'POST'],
 ];
