@@ -46,7 +46,7 @@ export async function renderView() {
             return;
         }
 
-        totalPages = Math.ceil(resp.total / 20);
+        totalPages = Math.ceil(resp.total / 8);
 
         resp.users.forEach(user => {
             const userDiv = document.createElement('div');

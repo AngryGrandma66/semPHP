@@ -15,7 +15,7 @@ class AdminController extends BaseController
         }
 
         $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
-        $limit = 20;
+        $limit = 8;
 
         $userModel = new UserModel();
 
@@ -29,14 +29,10 @@ class AdminController extends BaseController
         $this->sendJsonResponse([
             'success' => true,
             'users'   => $users,
-            'total'   => $total  // We'll use this in the frontend
+            'total'   => $total
         ]);
     }
-    /**
-     * Allow admin or owner to update user role.
-     *   - Admin can only promote user->admin
-     *   - Owner can promote/demote
-     */
+
     public function updateUserRole()
     {
         if (!isset($_SESSION['role']) ||

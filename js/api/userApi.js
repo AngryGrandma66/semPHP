@@ -62,7 +62,7 @@ export async function getUserByName(name) {
 
 
 export async function getAllUsers(page = 1) {
-    const offset = (page - 1) * 20;
+    const offset = (page - 1) * 8;
     const resp = await fetch(`/api/getAllUsers?offset=${offset}`, {
         method: 'GET',
         credentials: 'include'
