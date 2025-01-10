@@ -7,7 +7,7 @@ import {
     sendMessage,
     getChatrooms
 } from "../api/chatApi.js";
-import {renderChatrooms} from "../misc/renderAdds.js";
+import {renderChatrooms, renderFancyPagination} from "../misc/renderAdds.js";
 
 export async function renderView() {
     let pageURL = window.location.href;
@@ -75,53 +75,21 @@ export async function renderView() {
         }
 
         renderChatrooms(chatroomList, resp.chatrooms);
-
         totalPages = Math.ceil(resp.total / 10);
-        renderPagination(page, totalPages);
-    }
 
-    function renderPagination(page, total) {
-        paginationBar.innerHTML = '';
-
-        // Prev
-        if (page > 1) {
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'Prev';
-            prevBtn.addEventListener('click', () => {
-                currentPage = page - 1;
+        renderFancyPagination(
+            paginationBar,
+            page,
+            totalPages,
+            (pageNum) => {
+                currentPage = pageNum;
                 loadAsideChatrooms(currentPage, currentFilter);
-            });
-            paginationBar.appendChild(prevBtn);
-        }
-
-        // 1..total
-        for (let p = 1; p <= total; p++) {
-            const pageBtn = document.createElement('button');
-            pageBtn.textContent = p.toString();
-            if (p === page) {
-                pageBtn.disabled = true;
             }
-            pageBtn.addEventListener('click', () => {
-                currentPage = p;
-                loadAsideChatrooms(currentPage, currentFilter);
-            });
-            paginationBar.appendChild(pageBtn);
-        }
-
-        // Next
-        if (page < total) {
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Next';
-            nextBtn.addEventListener('click', () => {
-                currentPage = page + 1;
-                loadAsideChatrooms(currentPage, currentFilter);
-            });
-            paginationBar.appendChild(nextBtn);
-        }
+        );
     }
 
     // INITIAL LOAD
-    loadAsideChatrooms(currentPage, currentFilter);
+    await loadAsideChatrooms(currentPage, currentFilter);
 
     // SEARCH BAR
     searchBar.addEventListener('keyup', () => {

@@ -1,8 +1,7 @@
-// /js/views/homeView.js
 import {getCurrentUser} from '../api/userApi.js';
 import {sanitize} from "../misc/utils.js";
 import {addChatroom, getChatrooms} from "../api/chatApi.js";
-import {renderChatrooms} from "../misc/renderAdds.js";
+import {renderChatrooms, renderFancyPagination} from "../misc/renderAdds.js";
 
 export async function renderView() {
     const content = document.getElementById('content');
@@ -16,7 +15,6 @@ export async function renderView() {
             <div id="homeChatroomList" class="HomeChatroomList"></div>
             
             <div id="chatroomPaginationBar" class="pagination-bar"></div>
-            
         </div>
     `;
 
@@ -40,6 +38,7 @@ export async function renderView() {
     let currentPage = 1;
     let totalPages = 1;
 
+
     async function loadChatrooms(page, filter) {
         // Clear the displayed list first
         displayedChatrooms.innerHTML = '';
@@ -57,48 +56,16 @@ export async function renderView() {
         // Calculate total pages
         totalPages = Math.ceil(resp.total / 10);
 
-        // Render the pagination
-        renderPagination(page, totalPages);
-    }
-
-    function renderPagination(page, total) {
-        paginationBar.innerHTML = '';
-
-        // Prev button
-        if (page > 1) {
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'Prev';
-            prevBtn.addEventListener('click', () => {
-                currentPage = page - 1;
+        // Render fancy pagination
+        renderFancyPagination(
+            paginationBar,
+            page,
+            totalPages,
+            (pageNum) => {
+                currentPage = pageNum;
                 loadChatrooms(currentPage, currentFilter);
-            });
-            paginationBar.appendChild(prevBtn);
-        }
-
-        // 1.. total
-        for (let p = 1; p <= total; p++) {
-            const pageBtn = document.createElement('button');
-            pageBtn.textContent = p.toString();
-            if (p === page) {
-                pageBtn.disabled = true;
             }
-            pageBtn.addEventListener('click', () => {
-                currentPage = p;
-                loadChatrooms(currentPage, currentFilter);
-            });
-            paginationBar.appendChild(pageBtn);
-        }
-
-        // Next button
-        if (page < total) {
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Next';
-            nextBtn.addEventListener('click', () => {
-                currentPage = page + 1;
-                loadChatrooms(currentPage, currentFilter);
-            });
-            paginationBar.appendChild(nextBtn);
-        }
+        );
     }
 
     // Initial load (page=1, filter='')
@@ -109,8 +76,7 @@ export async function renderView() {
         currentFilter = searchBar.value;
         currentPage = 1;
         loadChatrooms(currentPage, currentFilter);
-    });
-    if (userData.success) {
+    });    if (userData.success) {
         if (userData.role === 'admin' || userData.role === 'owner') {
             const addChatroomForm = document.createElement('form')
             addChatroomForm.id = 'addChatroomForm';

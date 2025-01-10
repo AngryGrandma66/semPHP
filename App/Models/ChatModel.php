@@ -121,7 +121,7 @@ class ChatModel extends BaseModel
     ");
 
         $filter = $filter . '%';
-        $stmt->bindValue(':filter', $filter );
+        $stmt->bindValue(':filter', $filter);
         $stmt->execute();
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         return (int)$row['total'];
@@ -131,17 +131,23 @@ class ChatModel extends BaseModel
     public function getMessagesByUser($username, $offset, $limit)
     {
         // Retrieve user ID based on username
-        $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :username");
+        $stmt = $this->db->prepare("
+        SELECT id, pathtopfp
+        FROM users 
+        WHERE username = :username
+        LIMIT 1
+    ");
         $stmt->execute([':username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$user) {
             return [];
         }
         $userId = $user['id'];
+        $userPfp = $user['pathtopfp'] ?: '/images/assets/anonPfp.webp';
 
-        // Fetch messages associated with the user, sorted by timestamp descending
         $stmt = $this->db->prepare("
-        SELECT chatmessages.id, chatmessages.message, chatmessages.timestamp, chatmessages.pathtoimage, chatmessages.chatRoomId
+        SELECT chatmessages.id, chatmessages.message, chatmessages.timestamp, chatmessages.pathtoimage, chatmessages.chatRoomId,
+        :userPfp AS userPfp
         FROM chatmessages
         WHERE chatmessages.userId = :uid
         ORDER BY chatmessages.timestamp DESC
@@ -150,6 +156,8 @@ class ChatModel extends BaseModel
         $stmt->bindValue(':uid', $userId, PDO::PARAM_INT);
         $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        // pass the user’s own pfp to each row:
+        $stmt->bindValue(':userPfp', $userPfp );
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
