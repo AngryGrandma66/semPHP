@@ -111,23 +111,30 @@ export async function renderView() {
         // Render each message
         messages.forEach((msg) => {
             const messageDiv = document.createElement('div');
+
+            console.log(msg)
             messageDiv.classList.add('user-message');
 
             // Possibly display user pfp for each message
             // if your ChatModel->getMessagesByUser returns userPfp
             // or if each message belongs to the same user anyway
             // Example:
-            // const userPfpImg = document.createElement('img');
-            // userPfpImg.src = msg.userPfp || '/images/assets/anonPfp.webp';
-            // userPfpImg.classList.add('user-pfp-in-message');
-            // messageDiv.appendChild(userPfpImg);
+            const userPfpImg = document.createElement('img');
+            userPfpImg.src = msg.pathtopfp|| '/images/assets/anonPfp.webp';
+            userPfpImg.classList.add('user-pfp-in-message');
+            messageDiv.appendChild(userPfpImg);
 
             // The text
             const messageText = document.createElement('p');
             messageText.textContent = sanitize(msg.message);
             messageText.classList.add('message-text');
             messageDiv.appendChild(messageText);
-
+            if(msg.pathtoimage) {
+                const messageImage= document.createElement('img');
+                messageImage.src = msg.pathtoimage;
+                messageImage.classList.add('message-image');
+                messageDiv.appendChild(userPfpImg);
+            }
             // Timestamp
             const timestampSpan = document.createElement('span');
             timestampSpan.textContent = msg.timestamp;

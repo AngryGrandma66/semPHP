@@ -13,7 +13,10 @@ class AdminController extends BaseController
             $this->sendJsonResponse(['success' => false, 'error' => 'You do not have permission'], 403);
         }
 
+
         $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
+        $offset = ($offset < 0) ? 0 : $offset;
+
         $limit = 8;
 
         $userModel = new UserModel();

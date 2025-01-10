@@ -16,9 +16,9 @@ class BaseController {
         $messageTime = strtotime($date);
 
         $date = date('ymd', $messageTime);
-        if ($date == date('ymd')) {
+        if ($date == date('ymd',strtotime('+1 hour'))) {
             return 'today at ' . date('H:i', $messageTime);
-        } elseif ($date == date('ymd', strtotime("-1 days"))) {
+        } elseif ($date == date('ymd', strtotime("-23 hours"))) {
             return 'yesterday at ' . date('H:i', $messageTime);
         }
         return date('d.m.Y H:i', $messageTime);

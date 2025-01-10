@@ -133,7 +133,7 @@ class ChatModel extends BaseModel
         // Retrieve user ID based on username
         $stmt = $this->db->prepare("
         SELECT id, pathtopfp
-        FROM users 
+        FROM users
         WHERE username = :username
         LIMIT 1
     ");
@@ -147,7 +147,7 @@ class ChatModel extends BaseModel
 
         $stmt = $this->db->prepare("
         SELECT chatmessages.id, chatmessages.message, chatmessages.timestamp, chatmessages.pathtoimage, chatmessages.chatRoomId,
-        :userPfp AS userPfp
+        :userPfp AS pathtopfp 
         FROM chatmessages
         WHERE chatmessages.userId = :uid
         ORDER BY chatmessages.timestamp DESC
