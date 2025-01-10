@@ -126,4 +126,74 @@ class ChatModel extends BaseModel
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         return (int)$row['total'];
     }
+
+
+    public function getMessagesByUser($username, $offset, $limit)
+    {
+        // Retrieve user ID based on username
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :username");
+        $stmt->execute([':username' => $username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$user) {
+            return [];
+        }
+        $userId = $user['id'];
+
+        // Fetch messages associated with the user, sorted by timestamp descending
+        $stmt = $this->db->prepare("
+        SELECT chatmessages.id, chatmessages.message, chatmessages.timestamp, chatmessages.pathtoimage, chatmessages.chatRoomId
+        FROM chatmessages
+        WHERE chatmessages.userId = :uid
+        ORDER BY chatmessages.timestamp DESC
+        LIMIT :limit OFFSET :offset
+    ");
+        $stmt->bindValue(':uid', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getUserMessagesCount($username)
+    {
+        // Count total messages for the user
+        $stmt = $this->db->prepare("
+        SELECT COUNT(*) AS total
+        FROM chatmessages
+        WHERE userId = (SELECT id FROM users WHERE username = :username)
+    ");
+        $stmt->execute([':username' => $username]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$row['total'];
+    }
+
+    public function editMessage($messageId, $newText, $username)
+    {
+        // Retrieve user ID
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :username");
+        $stmt->execute([':username' => $username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$user) {
+            return false; // User not found
+        }
+        $userId = $user['id'];
+
+        // Verify that the message belongs to the user
+        $stmt = $this->db->prepare("SELECT userId FROM chatmessages WHERE id = :mid");
+        $stmt->execute([':mid' => $messageId]);
+        $message = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$message) {
+            return false; // Message not found
+        }
+
+        if ($message['userId'] != $userId) {
+            return false; // Not the owner
+        }
+
+        // Update the message content
+        $stmt = $this->db->prepare("UPDATE chatmessages SET message = :msg WHERE id = :mid");
+        $stmt->execute([':msg' => $newText, ':mid' => $messageId]);
+        return true;
+    }
 }

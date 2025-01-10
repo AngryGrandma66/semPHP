@@ -5,7 +5,6 @@ $routes = [
     'api/login' => ['controller' => 'UserController', 'action' => 'login', 'method' => 'POST'],
     'api/logout' => ['controller' => 'UserController', 'action' => 'logout', 'method' => 'POST'],
     'api/currentUser' => ['controller' => 'UserController', 'action' => 'getCurrentUser', 'method' => 'GET'],
-    'api/uploadProfilePicture' => ['controller' => 'UserController', 'action' => 'uploadProfilePicture', 'method' => 'POST'],
     'api/userByName' => ['controller' => 'UserController', 'action' => 'userByName', 'method' => 'GET'],
 
     // Chat
@@ -19,4 +18,9 @@ $routes = [
     //admin
     'api/getAllUsers' => ['controller' => 'AdminController', 'action' => 'getAllUsers', 'method' => 'GET'],
     'api/updateUserRole' => ['controller' => 'AdminController', 'action' => 'updateUserRole', 'method' => 'POST'],
+
+    //profile
+    'api/getUserMessages' => ['controller' => 'ProfileController', 'action' => 'getUserMessages', 'method' => 'GET'],
+    'api/editMessage' => ['controller' => 'ProfileController', 'action' => 'editMessage', 'method' => 'POST'],
+
 ];

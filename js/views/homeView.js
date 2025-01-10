@@ -55,7 +55,7 @@ export async function renderView() {
         renderChatrooms(displayedChatrooms, resp.chatrooms);
 
         // Calculate total pages
-        totalPages = Math.ceil(resp.total / 20);
+        totalPages = Math.ceil(resp.total / 10);
 
         // Render the pagination
         renderPagination(page, totalPages);

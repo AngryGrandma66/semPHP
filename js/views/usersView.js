@@ -1,7 +1,8 @@
 // /js/views/usersView.js
 
-import {getAllUsers, updateUserRole, getCurrentUser} from "../api/userApi.js";
+import {getCurrentUser} from "../api/userApi.js";
 import {navigateTo} from "../router.js";
+import {getAllUsers, updateUserRole} from "../api/adminApi.js";
 
 export async function renderView() {
     const content = document.getElementById('content');

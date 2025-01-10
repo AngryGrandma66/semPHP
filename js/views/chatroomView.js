@@ -11,7 +11,7 @@ import {renderChatrooms} from "../misc/renderAdds.js";
 
 export async function renderView() {
     let pageURL = window.location.href;
-    let chatroomNameFromUrl = pageURL.substring(pageURL.lastIndexOf('/') + 1);
+    let chatroomNameFromUrl = decodeURIComponent(pageURL.substring(pageURL.lastIndexOf('/') + 1));
     const content = document.getElementById('content');
     const title = document.querySelector('title');
 
@@ -60,7 +60,6 @@ export async function renderView() {
     const searchBar      = document.getElementById('chatroomSearch');
     const paginationBar  = document.getElementById('asideChatroomPaginationBar');
 
-    // We'll implement a local pagination for the aside
     let currentFilter = '';
     let currentPage   = 1;
     let totalPages    = 1;
@@ -77,7 +76,7 @@ export async function renderView() {
 
         renderChatrooms(chatroomList, resp.chatrooms);
 
-        totalPages = Math.ceil(resp.total / 20);
+        totalPages = Math.ceil(resp.total / 10);
         renderPagination(page, totalPages);
     }
 
