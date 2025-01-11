@@ -8,3 +8,7 @@ export function sanitize(str) {
 export function getJsonHeaders() {
     return {'Content-Type': 'application/json'};
 }
+
+
+
+export const basePath ='/~krupima3/'

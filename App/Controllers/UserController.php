@@ -16,8 +16,8 @@ class UserController extends BaseController
 
         $errors = [];
 
-        if (strlen($username) < 2 || strlen($username) > 20) {
-            $errors['username'] = 'Username must be between 2 and 20 characters.';
+        if (!preg_match('/^[A-Za-z0-9_]{3,20}$/', $username)) {
+            $errors['username'] = 'Username must be 3–20 chars long and only contain letters, digits, or underscores.';
         } elseif (filter_var($username, FILTER_VALIDATE_EMAIL)) {
             $errors['username'] = 'Username cannot be in email format.';
         }
@@ -27,7 +27,7 @@ class UserController extends BaseController
             $errors['email'] = 'Invalid email format.';
         }
 
-        $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/';
+        $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,100}$/';
 
         if (empty($password)) {
             $errors['password'] = 'Password is required.';
@@ -54,7 +54,7 @@ class UserController extends BaseController
         }
 
         $imageUploadService = new ImageUploadService();
-        $uploadResponse = $imageUploadService->uploadImage($_FILES['pfpPic'], true); // true => isProfilePicture
+        $uploadResponse = $imageUploadService->uploadImage($_FILES['pfpPic'], true);
 
         if ($uploadResponse['status'] === 'error') {
             $this->sendJsonResponse([
@@ -94,7 +94,6 @@ class UserController extends BaseController
                 'success' => false,
                 'error' => $errorMessage,
             ], 400);
-            die;
         };
         if (empty($loginInput)) {
             $loginError('Username or email are required.');
@@ -161,24 +160,24 @@ class UserController extends BaseController
     public function userByName()
     {
         if (!isset($_GET['username'])) {
-            $this->sendJsonResponse(['success' => false, 'message'=>'No name in GET'], 400);
+            $this->sendJsonResponse(['success' => false, 'message' => 'No name in GET'], 400);
         }
         $username = $_GET['username'];
 
         if (strlen($username) < 2 || strlen($username) > 50) {
-            $this->sendJsonResponse(['success' => false, 'error'=>'Username length invalid'],400);
+            $this->sendJsonResponse(['success' => false, 'error' => 'Username length invalid'], 400);
         }
 
         $userModel = new UserModel();
         $user = $userModel->getUserByUsername($username);
 
         if (!$user) {
-            $this->sendJsonResponse(['success' => false, 'error'=>'This user does not exist'],404);
+            $this->sendJsonResponse(['success' => false, 'error' => 'This user does not exist'], 404);
         }
 
-        $user['username']  = $this->sanitizeOutput($user['username']);
-        $user['email']     = $this->sanitizeOutput($user['email']);
-        $user['role']      = $this->sanitizeOutput($user['role']);
+        $user['username'] = $this->sanitizeOutput($user['username']);
+        $user['email'] = $this->sanitizeOutput($user['email']);
+        $user['role'] = $this->sanitizeOutput($user['role']);
 
         $this->sendJsonResponse(['success' => true, 'user' => $user]);
     }

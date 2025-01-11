@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
-$dbname = "zalSem";
-$user = 'root';
-$password = 'root';
+$dbname = "krupima3";
+$user = 'krupima3';
+$password = 'webove aplikace';
 
 $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8";

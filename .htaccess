@@ -1,16 +1,18 @@
 RewriteEngine On
-#RewriteBase /~krupima3/
 
-# Redirect URLs with trailing slashes to non-trailing versions (if not a directory)
+# The critical line:
+RewriteBase /~krupima3/
+
+# If you want trailing slash removal
 RewriteCond %{REQUEST_URI} ^(.+)/$
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ %1 [R=301,L]
 
-# Exclude image directories from rewrite rules
+# Exclude image directories
 RewriteCond %{REQUEST_URI} ^/images/
 RewriteRule ^ - [L]
 
-# Serve existing files and directories directly
+# Serve existing files/directories
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
@@ -18,5 +20,8 @@ RewriteRule ^ - [L]
 # API routes
 RewriteRule ^api/(.*)$ index.php?url=$1 [QSA,B,L]
 
-# Fallback to index.html for SPA routing
+# Fallback to index.html
 RewriteRule . index.html [L]
+
+php_value display_errors "On"
+php_value error_log "./logs/php_errors.log"

@@ -1,7 +1,7 @@
-import {getJsonHeaders} from "../misc/utils.js";
+import {basePath, getJsonHeaders} from "../misc/utils.js";
 
 export async function getUserMessages(username, offset ) {
-    const resp = await fetch(`/api/getUserMessages?username=${encodeURIComponent(username)}&offset=${offset}`, {
+    const resp = await fetch(basePath+`api/getUserMessages?username=${encodeURIComponent(username)}&offset=${offset}`, {
         method: 'GET',
         credentials: 'include'
     });
@@ -9,7 +9,7 @@ export async function getUserMessages(username, offset ) {
 }
 
 export async function editUserMessage(messageId, newText) {
-    const resp = await fetch('/api/editMessage', {
+    const resp = await fetch(basePath+'api/editMessage', {
         method: 'POST',
         headers: getJsonHeaders(),
         credentials: 'include',

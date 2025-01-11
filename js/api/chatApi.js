@@ -1,8 +1,8 @@
-import {getJsonHeaders} from "../misc/utils.js";
+import {getJsonHeaders,basePath} from "../misc/utils.js";
 
 export async function getChatrooms(filter, page = 1) {
     const offset = (page - 1) * 10;
-    const resp = await fetch(`/api/getChatrooms?filter=${encodeURIComponent(filter)}&offset=${offset}`, {
+    const resp = await fetch(basePath +`api/getChatrooms?filter=${encodeURIComponent(filter)}&offset=${offset}`, {
         method: 'GET',
         credentials: 'include',
     });
@@ -10,7 +10,7 @@ export async function getChatrooms(filter, page = 1) {
 }
 export async function addChatroom(chatroomName) {
 
-    const resp = await fetch(`/api/addChatroom`, {
+    const resp = await fetch(basePath +`api/addChatroom`, {
         method: 'POST',
         headers: getJsonHeaders(),
         body: JSON.stringify(chatroomName),
@@ -21,7 +21,7 @@ export async function addChatroom(chatroomName) {
 }
 
 export async function getMessagesForChatroom(name, messageOffset) {
-    const resp = await fetch(`/api/getChatroomMessages?chatroom=${encodeURIComponent(name)}&offset=${messageOffset}`, {
+    const resp = await fetch(basePath +`api/getChatroomMessages?chatroom=${encodeURIComponent(name)}&offset=${messageOffset}`, {
         method: 'GET',
         credentials: 'include'
     });
@@ -36,7 +36,7 @@ export async function sendMessage(chatroomName, message, file) {
         formData.append('message_image', file);
     }
 
-    const resp = await fetch(`/api/chatroom/${encodeURIComponent(chatroomName)}/sendMessage`, {
+    const resp = await fetch(basePath +`api/chatroom/${encodeURIComponent(chatroomName)}/sendMessage`, {
         method: 'POST',
         body: formData,
         credentials: 'include'
@@ -44,7 +44,7 @@ export async function sendMessage(chatroomName, message, file) {
     return resp.json();
 }
 export async function getLatestMessages(timestamp, chatroomName) {
-    const resp = await fetch(`/api/getLatestMessages?timestamp=${timestamp}&chatroomName=${encodeURIComponent(chatroomName)}`, {
+    const resp = await fetch(basePath +`api/getLatestMessages?timestamp=${timestamp}&chatroomName=${encodeURIComponent(chatroomName)}`, {
         method: 'GET',
         credentials: 'include'
     })
@@ -53,7 +53,7 @@ export async function getLatestMessages(timestamp, chatroomName) {
 
 
 export async function getChatroomByName(chatroomName) {
-    const resp = await fetch(`/api/getChatroomByName?name=${encodeURIComponent(chatroomName)}`, {
+    const resp = await fetch(basePath +`api/getChatroomByName?name=${encodeURIComponent(chatroomName)}`, {
         method: 'GET',
         credentials: 'include'
     })

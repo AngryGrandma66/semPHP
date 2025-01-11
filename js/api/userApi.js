@@ -1,7 +1,7 @@
-import {getJsonHeaders} from "../misc/utils.js";
+import {getJsonHeaders,basePath} from "../misc/utils.js";
 
 export async function registerUser(formData) {
-    const resp = await fetch('/api/register', {
+    const resp = await fetch(basePath +'api/register', {
         method: 'POST',
         body: formData,
         credentials: 'include'
@@ -10,7 +10,7 @@ export async function registerUser(formData) {
 }
 
 export async function loginUser(loginInput, password) {
-    const resp = await fetch('/api/login', {
+    const resp = await fetch(basePath +'api/login', {
         method: 'POST',
         headers: getJsonHeaders(),
         body: JSON.stringify({ loginInput, password }),
@@ -22,7 +22,7 @@ export async function loginUser(loginInput, password) {
 
 export async function logoutUser() {
 
-    const resp = await fetch('/api/logout', {
+    const resp = await fetch(basePath +'api/logout', {
         method: 'POST',
         headers: getJsonHeaders(),
         credentials: 'include'
@@ -36,7 +36,7 @@ export async function logoutUser() {
     return data;
 }
 export async function getCurrentUser() {
-    const resp = await fetch('/api/currentUser', {
+    const resp = await fetch(basePath +'api/currentUser', {
         method: 'GET',
         credentials: 'include'
     });
@@ -46,7 +46,7 @@ export async function getCurrentUser() {
 
 
 export async function getUserByName(name) {
-   const resp = await fetch(`/api/userByName?username=${encodeURIComponent(name)}`, {
+   const resp = await fetch(basePath+`api/userByName?username=${encodeURIComponent(name)}`, {
        method: 'GET',
        credentials: 'include'
    });

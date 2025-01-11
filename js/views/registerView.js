@@ -1,26 +1,28 @@
-import { registerUser } from '../api/userApi.js';
-import { navigateTo } from '../router.js';
+import {registerUser} from '../api/userApi.js';
+import {navigateTo} from '../router.js';
 
 export function renderView() {
     const content = document.getElementById('content');
     content.innerHTML = `
     <form id="registerForm">
-      <!-- Username -->
       <div class="form-group">
-        <label for="username">Username:</label>
+        <label for="username">Username: *</label>
         <input
           type="text"
           id="username"
           name="username"
           placeholder="Choose a username"
+          pattern="^[A-Za-z0-9_]{3,20}$"
+          minlength="3"
+          maxlength="20"
        required
         />
+        <span class="inputHelper">Letters, numbers, underscores only</span>
         <span id="usernameError" class="error"></span>
       </div>
 
-      <!-- Email -->
       <div class="form-group">
-        <label for="email">Email:</label>
+        <label for="email">Email: *</label>
         <input
           type="email"
           id="email"
@@ -28,42 +30,46 @@ export function renderView() {
           placeholder="Enter your email"
           required
         />
+        <span class="inputHelper">Must be a valid email address.</span>
         <span id="emailError" class="error"></span>
       </div>
 
-      <!-- Password -->
       <div class="form-group">
-        <label for="password">Password:</label>
+        <label for="password">Password: *</label>
         <input
           type="password"
           id="password"
           name="password"
           placeholder="Create a password"
+          minlength="8"
+          maxlength="100"
         required
         />
+        <span class="inputHelper">Mixed-case, digit, and symbol mandatory.</span>
         <span id="passwordError" class="error"></span>
       </div>
 
-      <!-- Confirm Password -->
       <div class="form-group">
-        <label for="confirmPassword">Confirm Password:</label>
+        <label for="confirmPassword">Confirm Password: *</label>
         <input
           type="password"
           id="confirmPassword"
           name="confirmPassword"
           placeholder="Re-enter your password"
+          minlength="8"
+          maxlength="100"
         required
         />
+        <span class="inputHelper">Must match original password.</span>
         <span id="confirmPasswordError" class="error"></span>
       </div>
 
       <div class="form-group">
-        <label for="profile_pic">Profile picture</label>
+        <label for="profile_pic">Profile picture: *</label>
         <input type="file"
         name="pfpPic" 
         accept=".webp, .png, .jpeg, .jpg" 
         id="profile_pic"
-        alt="profile pic upload"
         required
         />
         
@@ -80,15 +86,22 @@ export function renderView() {
         e.preventDefault();
 
 
-        const formData = new FormData(form);
-        const result = await registerUser(
-        formData) ;
-
         document.getElementById('usernameError').textContent = '';
         document.getElementById('emailError').textContent = '';
         document.getElementById('passwordError').textContent = '';
         document.getElementById('confirmPasswordError').textContent = '';
         document.getElementById('fileError').textContent = '';
+
+        if (document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
+
+            document.getElementById('confirmPasswordError').textContent ='Passwords do not match'
+            return;
+        }
+
+
+        const formData = new FormData(form);
+
+        const result = await registerUser(formData);
         if (result.success) {
 
             navigateTo('/login');

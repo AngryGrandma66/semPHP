@@ -8,21 +8,21 @@ class ImageUploadService
     {
         if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
             return [
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'File upload error or no file uploaded.'
             ];
         }
         if ($file['size'] > MAX_IMAGE_SIZE) {
             return [
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'File exceeds the maximum allowed size of ' . (MAX_IMAGE_SIZE / (1024 * 1024)) . ' MB.'
             ];
         }
         $validMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        $fileMimeType   = mime_content_type($file['tmp_name']) ?: '';
+        $fileMimeType = mime_content_type($file['tmp_name']) ?: '';
         if (!in_array($fileMimeType, $validMimeTypes, true)) {
             return [
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Invalid file type. Only JPEG, PNG, or WebP are allowed.'
             ];
         }
@@ -30,7 +30,7 @@ class ImageUploadService
         $sourceImage = $this->createImageResource($file['tmp_name'], $fileMimeType);
         if (!$sourceImage) {
             return [
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Failed to create image resource.'
             ];
         }
@@ -39,7 +39,7 @@ class ImageUploadService
         if (!$scaledImage) {
             imagedestroy($sourceImage);
             return [
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Failed to scale image.'
             ];
         }
@@ -52,25 +52,25 @@ class ImageUploadService
 
         $prefix = $isProfilePicture ? 'pfp_' : 'msg_';
         $uniqueFilename = uniqid($prefix, true) . '.webp';
-        $fullPath       = $targetDirectory . '/' . $uniqueFilename;
+        $fullPath = $targetDirectory . '/' . $uniqueFilename;
 
         imagedestroy($sourceImage);
         if (!imagewebp($scaledImage, $fullPath)) {
             imagedestroy($scaledImage);
             return [
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Failed to save image as WebP.'
             ];
         }
 
         imagedestroy($scaledImage);
 
-        $publicPath = '/images/userUploads/' . $subDirectory . '/' . $uniqueFilename;
+        $publicPath = '/' . BASE_PATH . 'images/userUploads/' . $subDirectory . '/' . $uniqueFilename;
 
         return [
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Image uploaded successfully!',
-            'path'    => $publicPath
+            'path' => $publicPath
         ];
     }
 
@@ -78,29 +78,30 @@ class ImageUploadService
     {
         return match ($mimeType) {
             'image/jpeg' => imagecreatefromjpeg($filePath),
-            'image/png'  => imagecreatefrompng($filePath),
+            'image/png' => imagecreatefrompng($filePath),
             'image/webp' => imagecreatefromwebp($filePath),
-            default      => false,
+            default => false,
         };
     }
+
     private function scaleImage($sourceImage, bool $isProfilePicture)
     {
-        $originalWidth  = imagesx($sourceImage);
+        $originalWidth = imagesx($sourceImage);
         $originalHeight = imagesy($sourceImage);
 
         if ($isProfilePicture) {
-            $newWidth  = 64;
+            $newWidth = 64;
             $newHeight = 64;
         } else {
             $maxDimension = 400;
-            $aspectRatio  = $originalWidth / $originalHeight;
+            $aspectRatio = $originalWidth / $originalHeight;
 
             if ($originalWidth > $originalHeight) {
-                $newWidth  = min($originalWidth, $maxDimension);
+                $newWidth = min($originalWidth, $maxDimension);
                 $newHeight = (int)round($newWidth / $aspectRatio);
             } else {
                 $newHeight = min($originalHeight, $maxDimension);
-                $newWidth  = (int)round($newHeight * $aspectRatio);
+                $newWidth = (int)round($newHeight * $aspectRatio);
             }
         }
 

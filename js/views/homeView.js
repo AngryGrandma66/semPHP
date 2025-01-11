@@ -89,7 +89,7 @@ export async function renderView() {
                         if (data.success) {
                             chatroomInput.value = '';
                             inputMessage.innerText = 'Chat room added successfully!';
-                            getChatrooms(searchBar.value, 0)
+                            getChatrooms(searchBar.value, 1)
                                 .then(data => {
                                         if (data.success) {
                                             renderChatrooms(displayedChatrooms, data.chatrooms);
