@@ -1,5 +1,4 @@
 export function renderChatrooms(chatroomList, chatrooms) {
-    // Clear existing chatrooms
     chatroomList.innerHTML = '';
 
     if (chatrooms.length === 0) {
@@ -7,7 +6,7 @@ export function renderChatrooms(chatroomList, chatrooms) {
         return;
     }
 
-    const ul = document.createElement('ul'); // Create a list to hold chatrooms
+    const ul = document.createElement('ul');
 
     for (const chatroom of chatrooms) {
         const li = document.createElement('li');
@@ -30,7 +29,6 @@ export function renderFancyPagination(containerEl, currentPage, totalPages, onPa
         containerEl.appendChild(prevBtn);
     }
 
-    // Helper to add a single page button
     function addPageButton(pageNum, disabledIfSame) {
         if (containerEl.querySelector(`[data-page='${pageNum}']`)) return;
 

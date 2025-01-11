@@ -1,4 +1,3 @@
-// /js/views/usersView.js
 
 import {getCurrentUser} from "../api/userApi.js";
 import {navigateTo} from "../router.js";
@@ -9,7 +8,6 @@ export async function renderView() {
     const title = document.querySelector('title');
     title.innerText = 'Users';
 
-    // Clear the content area
     content.innerHTML = `
       <h2>All Users</h2>
       <div id="userList"></div>
@@ -112,7 +110,7 @@ export async function renderView() {
             const pageBtn = document.createElement('button');
             pageBtn.textContent = p.toString();
             if (p === page) {
-                pageBtn.disabled = true; // highlight current page
+                pageBtn.disabled = true;
             }
             pageBtn.addEventListener('click', () => {
                 currentPage = p;

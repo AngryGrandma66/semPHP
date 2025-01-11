@@ -7,7 +7,6 @@ export async function getChatrooms(filter, page = 1) {
         credentials: 'include',
     });
     return resp.json();
-    // The response now includes: { success: true, chatrooms: [...], total: 123 }
 }
 export async function addChatroom(chatroomName) {
 

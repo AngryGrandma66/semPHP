@@ -30,7 +30,6 @@ export async function logoutUser() {
     const data = await resp.json();
 
     if (data.success) {
-        // Update the navbar after successful logout
         import('../partials/navbar.js').then(module => module.setupNavbar());
     }
 

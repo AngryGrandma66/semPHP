@@ -13,17 +13,22 @@ class AdminController extends BaseController
             $this->sendJsonResponse(['success' => false, 'error' => 'You do not have permission'], 403);
         }
 
-
         $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
-        $offset = ($offset < 0) ? 0 : $offset;
+        if ($offset < 0) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'Offset cannot be negative'], 400);
+        }
+
 
         $limit = 8;
 
         $userModel = new UserModel();
-
         $users = $userModel->getAllUsers($offset, $limit);
-
         $total = $userModel->getUsersCount();
+
+        foreach ($users as &$user) {
+            $user['username'] = $this->sanitizeOutput($user['username']);
+            $user['email']    = $this->sanitizeOutput($user['email']);
+        }
 
         $this->sendJsonResponse([
             'success' => true,
@@ -41,10 +46,21 @@ class AdminController extends BaseController
 
         $data = json_decode(file_get_contents('php://input'), true);
         $username = $data['username'] ?? '';
-        $newRole = $data['role'] ?? '';
+        $newRole  = $data['role']     ?? '';
 
-        if (!$username || !$newRole) {
-            $this->sendJsonResponse(['success' => false, 'error' => 'Missing parameters (username, role)'], 400);
+        if (strlen($username) < 2 || strlen($username) > 30) {
+            $this->sendJsonResponse([
+                'success' => false,
+                'error'   => 'Username must be between 2 and 30 characters'
+            ], 400);
+        }
+
+        $allowedRoles = ['admin', 'user', 'owner'];
+        if (!in_array($newRole, $allowedRoles, true)) {
+            $this->sendJsonResponse([
+                'success' => false,
+                'error'   => "Invalid role. Must be one of: " . implode(', ', $allowedRoles),
+            ], 400);
         }
 
         if ($_SESSION['role'] === 'admin' && $newRole === 'owner') {
@@ -53,7 +69,6 @@ class AdminController extends BaseController
 
         $userModel = new UserModel();
         $user = $userModel->getUserByUsername($username);
-
         if (!$user) {
             $this->sendJsonResponse(['success' => false, 'error' => 'User not found'], 404);
         }
@@ -67,6 +82,7 @@ class AdminController extends BaseController
         }
 
         $userModel->updateUserRole($username, $newRole);
+
         $this->sendJsonResponse(['success' => true, 'message' => 'User role updated']);
     }
 }

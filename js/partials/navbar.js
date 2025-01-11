@@ -13,14 +13,12 @@ export async function setupNavbar() {
     try {
         const response = await getCurrentUser();
 
-        // Determine the new user state
         const newUserState = {
             loggedIn: response.success,
             username: response.user || null,
             role: response.role || null
         };
 
-        // Check if the user state has changed
         const stateChanged =
             lastUserState.loggedIn !== newUserState.loggedIn ||
             lastUserState.username !== newUserState.username ||
@@ -32,7 +30,6 @@ export async function setupNavbar() {
 
         navbar.innerHTML = '';
 
-        // Update the last known user state
         lastUserState = newUserState;
 
 
@@ -94,7 +91,7 @@ export async function setupNavbar() {
 
                     await setupNavbar();
 
-                    navigateTo('/home'); // Ensure navigateTo is imported
+                    navigateTo('/home');
                 } else {
                     window.alert(`Logout failed: ${result.error || 'Unknown error'}`);
                 }

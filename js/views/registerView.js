@@ -79,25 +79,21 @@ export function renderView() {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Grab all the input elements
 
-        const formData = new FormData(form);// Send registration request to the API
+        const formData = new FormData(form);
         const result = await registerUser(
         formData) ;
 
-        // Clear out previous error messages
         document.getElementById('usernameError').textContent = '';
         document.getElementById('emailError').textContent = '';
         document.getElementById('passwordError').textContent = '';
         document.getElementById('confirmPasswordError').textContent = '';
         document.getElementById('fileError').textContent = '';
         if (result.success) {
-            // If registration is successful, navigate to login (or anywhere else)
+
             navigateTo('/login');
         } else {
-            // If registration fails, check for field-specific errors
             if (result.errors) {
-                // result.errors is an object containing error messages
                 if (result.errors.username) {
                     document.getElementById('usernameError').textContent = result.errors.username;
                 }
@@ -114,7 +110,6 @@ export function renderView() {
                     document.getElementById('fileError').textContent = result.errors.pfpPic;
                 }
             } else if (result.error) {
-                // If there’s a generic error message (or some other error structure)
                 alert(`Error: ${result.error}`);
             }
         }

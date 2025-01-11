@@ -1,4 +1,3 @@
-// /js/views/chatroomView.js
 
 import {
     getChatroomByName,
@@ -55,7 +54,6 @@ export async function renderView() {
         </div>
     `;
 
-    // references
     const chatroomList   = document.getElementById('asideChatroomList');
     const searchBar      = document.getElementById('chatroomSearch');
     const paginationBar  = document.getElementById('asideChatroomPaginationBar');
@@ -88,19 +86,14 @@ export async function renderView() {
         );
     }
 
-    // INITIAL LOAD
     await loadAsideChatrooms(currentPage, currentFilter);
 
-    // SEARCH BAR
     searchBar.addEventListener('keyup', () => {
         currentFilter = searchBar.value;
         currentPage = 1;
         loadAsideChatrooms(currentPage, currentFilter);
     });
 
-    //-------------------------------------------------------
-    // *** The rest of your Chatroom logic remains the same. ***
-    //-------------------------------------------------------
     const messageBox = document.getElementById('messageBox');
     let messageOffset = 0;
     let savedTimestamp = Math.floor(Date.now() / 1000);

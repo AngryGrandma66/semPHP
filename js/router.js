@@ -1,4 +1,3 @@
-// /js/router.js
 
 const routes = {
     '/': 'home',
@@ -12,20 +11,16 @@ const routes = {
 function matchRoute(path, routes) {
     for (const routePattern in routes) {
         const paramNames = [];
-        // Escape forward slashes for regex
         let regexPattern = routePattern.replace(/\//g, '\\/');
 
-        // Replace {param} with a capturing group and store param names
         regexPattern = regexPattern.replace(/{([^}]+)}/g, (match, paramName) => {
             paramNames.push(paramName);
-            return '([^\\/]+)'; // Capture everything except '/'
+            return '([^\\/]+)';
         });
 
-        // Create a RegExp object with start and end anchors
         const regex = new RegExp(`^${regexPattern}$`);
         const match = path.match(regex);
         if (match) {
-            // Extract parameters based on captured groups
             const params = {};
             paramNames.forEach((name, index) => {
                 params[name] = decodeURIComponent(match[index + 1]);
@@ -61,7 +56,7 @@ async function handleRoute() {
         const module = await import(`./views/${view}View.js`);
         if (typeof module.renderView === 'function') {
             if(params) {
-                module.renderView(params); // Pass params to the view
+                module.renderView(params);
             }else{
                 module.renderView();
             }

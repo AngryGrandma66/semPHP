@@ -9,20 +9,27 @@ class ProfileController extends BaseController
 {
     public function getUserMessages()
     {
-        if (!isset($_GET['username']) || !isset($_GET['offset']) || !isset($_GET['limit'])) {
+        if (!isset($_GET['username']) || !isset($_GET['offset'])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing parameters'], 400);
         }
 
         $username = $_GET['username'];
         $offset = (int)$_GET['offset'];
-        $limit = (int)$_GET['limit'];
+        $limit = 10;
+
+        if (strlen($username) < 2 || strlen($username) > 50) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'username length invalid'], 400);
+        }
+        if ($offset < 0 ) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'offset invalid'], 400);
+        }
 
         $chatModel = new ChatModel();
         $messages = $chatModel->getMessagesByUser($username, $offset, $limit);
         $total = $chatModel->getUserMessagesCount($username);
 
-        // Convert timestamps to a readable format
         foreach ($messages as &$message) {
+            $message['message'] = $this->sanitizeOutput($message['message']);
             $message['timestamp'] = $this->dateConversion($message['timestamp']);
         }
 
@@ -35,20 +42,21 @@ class ProfileController extends BaseController
 
     public function editMessage()
     {
-        // Ensure the user is authenticated
+
         if (!isset($_SESSION['username'])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Not authenticated'], 401);
         }
 
-        // Retrieve data from the request body
-        $data = json_decode(file_get_contents('php://input'), true);
-        $newText = $data['message'] ?? '';
-        $messageId = $data['messageId'] ?? '';
+        $data     = json_decode(file_get_contents('php://input'), true);
+        $newText  = $data['message']   ?? '';
+        $messageId= $data['messageId'] ?? '';
 
-        if (empty($newText) || empty($messageId)) {
-            $this->sendJsonResponse(['success' => false, 'error' => 'Message ID and text are required'], 400);
+        if (strlen($newText) < 1 || strlen($newText) > 1000) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'Message text out of range'], 400);
         }
-
+        if (!ctype_digit((string)$messageId)) {
+            $this->sendJsonResponse(['success' => false, 'error' => 'Invalid messageId'], 400);
+        }
         $username = $_SESSION['username'];
 
         $chatModel = new ChatModel();

@@ -10,19 +10,14 @@ error_log(var_export($fullUrl, true));
 function matchRoute($url, $method, $routes): ?array
 {
     foreach ($routes as $pattern => $routeInfo) {
-        // Replace (.*) with a regex that captures any character except '/'
-        // Support optional parameters by keeping non-capturing groups and optional quantifiers
         $regex = '#^' . str_replace('/\(\.\*\)/', '([^/]*)', trim($pattern, '/')) . '$#';
 
         if (preg_match($regex, $url, $matches)) {
             if ($method === $routeInfo['method']) {
-                array_shift($matches); // Remove the full match
+                array_shift($matches);
 
-                // Process each parameter
                 $processedParams = array_map(function($param) {
-                    // Decode URL-encoded characters
                     $decodedParam = urldecode($param);
-                    // Trim spaces and set to '' if empty
                     return trim($decodedParam) === '' ? '' : $decodedParam;
                 }, $matches);
 

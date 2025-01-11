@@ -18,7 +18,6 @@ class UserModel extends BaseModel
         ]);
     }
 
-    // Get user by username
     public function getUserByUsername($username)
     {
         $stmt = $this->db->prepare(
@@ -26,7 +25,7 @@ class UserModel extends BaseModel
         );
         $stmt->execute([':u' => $username]);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC); // returns false if no row found, or associative array if found
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function getUserByUsernameValidation($username)
@@ -36,16 +35,15 @@ class UserModel extends BaseModel
         );
         $stmt->execute([':u' => $username]);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC); // returns false if no row found, or associative array if found
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
-    // Get user by email
     public function getUserByEmailValidation($email)
     {
         $stmt = $this->db->prepare(
             "SELECT email,password,role FROM users WHERE email = :e"
         );
         $stmt->execute([':e' => $email]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC); // returns false if no row found, or associative array if found
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function getAllUsers($offset, $limit)

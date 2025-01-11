@@ -1,7 +1,7 @@
 import {getJsonHeaders} from "../misc/utils.js";
 
-export async function getUserMessages(username, offset, limit = 10) {
-    const resp = await fetch(`/api/getUserMessages?username=${encodeURIComponent(username)}&offset=${offset}&limit=${limit}`, {
+export async function getUserMessages(username, offset ) {
+    const resp = await fetch(`/api/getUserMessages?username=${encodeURIComponent(username)}&offset=${offset}`, {
         method: 'GET',
         credentials: 'include'
     });

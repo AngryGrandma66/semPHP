@@ -26,7 +26,6 @@ export async function renderView() {
     const searchBar = document.getElementById('homeChatroomSearch');
     const paginationBar = document.getElementById('chatroomPaginationBar');
 
-    // Display user info
     if (userData.success) {
         document.getElementById('homeLoggedInUser').textContent =
             `You are logged in as ${sanitize(userData.user)}`;
@@ -40,7 +39,6 @@ export async function renderView() {
 
 
     async function loadChatrooms(page, filter) {
-        // Clear the displayed list first
         displayedChatrooms.innerHTML = '';
 
         const resp = await getChatrooms(filter, page);
@@ -50,13 +48,10 @@ export async function renderView() {
             return;
         }
 
-        // Render the chatrooms
         renderChatrooms(displayedChatrooms, resp.chatrooms);
 
-        // Calculate total pages
         totalPages = Math.ceil(resp.total / 10);
 
-        // Render fancy pagination
         renderFancyPagination(
             paginationBar,
             page,
@@ -68,10 +63,8 @@ export async function renderView() {
         );
     }
 
-    // Initial load (page=1, filter='')
     await loadChatrooms(currentPage, currentFilter);
 
-    // Search bar event
     searchBar.addEventListener('keyup', () => {
         currentFilter = searchBar.value;
         currentPage = 1;

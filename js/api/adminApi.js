@@ -7,7 +7,6 @@ export async function getAllUsers(page = 1) {
         credentials: 'include'
     });
     return resp.json();
-    // Ex: { success: true, users: [...], total: 123 }
 }
 export async function updateUserRole(username, role) {
     const resp = await fetch('/api/updateUserRole', {

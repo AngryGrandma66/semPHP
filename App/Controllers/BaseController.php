@@ -8,7 +8,6 @@ class BaseController {
         exit;
     }
     protected function sanitizeOutput($input) {
-        // Use this when outputting data if needed
         return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
     }
     protected function dateConversion($date)
