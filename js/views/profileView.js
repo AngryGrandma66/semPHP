@@ -96,7 +96,6 @@ export async function renderView() {
         messages.forEach((msg) => {
             const messageDiv = document.createElement('div');
 
-            console.log(msg)
             messageDiv.classList.add('user-message');
 
             const userPfpImg = document.createElement('img');

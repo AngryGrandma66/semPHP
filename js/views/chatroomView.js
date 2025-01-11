@@ -1,4 +1,3 @@
-
 import {
     getChatroomByName,
     getLatestMessages,
@@ -38,15 +37,19 @@ export async function renderView() {
             <div class="messageBox" id="messageBox"></div>
             
             <form id="sendMessageForm">
-                <input type="text" name="sendMessageInput" id="sendMessageInput" 
-                       class="messageSearch" placeholder="sendMessage">
+                <input type="text"
+                name="sendMessageInput"
+                id="sendMessageInput" 
+                class="messageSearch"
+                placeholder="sendMessage"
+                maxlength="1000"
+                >
                 <span id="senMessageError" class="error"></span>
                 
                 <input type="file"
                        name="messagePic" 
                        accept=".webp, .png, .jpeg, .jpg" 
                        id="messagePic"
-                       alt="profile pic upload"
                 />
                 <span id="fileError" class="error"></span>
                 <button type="submit">Send</button>
@@ -54,13 +57,13 @@ export async function renderView() {
         </div>
     `;
 
-    const chatroomList   = document.getElementById('asideChatroomList');
-    const searchBar      = document.getElementById('chatroomSearch');
-    const paginationBar  = document.getElementById('asideChatroomPaginationBar');
+    const chatroomList = document.getElementById('asideChatroomList');
+    const searchBar = document.getElementById('chatroomSearch');
+    const paginationBar = document.getElementById('asideChatroomPaginationBar');
 
     let currentFilter = '';
-    let currentPage   = 1;
-    let totalPages    = 1;
+    let currentPage = 1;
+    let totalPages = 1;
 
     async function loadAsideChatrooms(page, filter) {
         chatroomList.innerHTML = '';
@@ -113,9 +116,6 @@ export async function renderView() {
         if (!chatroomNameFromUrl) {
             return;
         }
-        if (!prepend) {
-            await latestMessages();
-        }
         const data = await getMessagesForChatroom(chatroomNameFromUrl, messageOffset);
         if (data.success) {
             if (data.messages.length > 0) {
@@ -146,9 +146,6 @@ export async function renderView() {
         }
 
         const message = messageInput.value.trim();
-        if (message === '') {
-            return;
-        }
 
         const file = fileInput.files?.[0] || null;
         await sendMessage(chatroomNameFromUrl, message, file);
@@ -159,9 +156,12 @@ export async function renderView() {
     });
 
     await loadMessages(false);
+    setInterval(async () => {
+        await latestMessages();
+    }, 3000);
 }
 
-function renderMessages(root,messages, prepend = false) {
+function renderMessages(root, messages, prepend = false) {
 
     messages.forEach(function (message) {
         const messageDiv = document.createElement('div');
@@ -178,7 +178,6 @@ function renderMessages(root,messages, prepend = false) {
         const usernameDiv = document.createElement('div');
 
         usernameDiv.classList.add('username');
-        console.log(message)
         if (message.username) {
 
             const usernameLink = document.createElement('a');

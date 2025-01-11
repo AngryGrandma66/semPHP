@@ -6,6 +6,8 @@ use PDO;
 
 class ChatModel extends BaseModel
 {
+    public $anonPath = '/' . BASE_PATH . '/images/assets/anonPfp.webp';
+
     public function getChatroomByName($name)
     {
         $stmt = $this->db->prepare(
@@ -21,10 +23,10 @@ class ChatModel extends BaseModel
         SELECT name
         FROM chatrooms
         WHERE name LIKE :filter
-        ORDER BY name
+        ORDER BY name asc
         LIMIT :limit OFFSET :offset
     ");
-        $filter = $filter . '%';
+        $filter = '%' . $filter . '%';
 
         $stmt->bindParam(':filter', $filter);
         $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
@@ -41,9 +43,10 @@ class ChatModel extends BaseModel
 
     public function getMessagesForChatroom($chatroomName, $offset, $limit)
     {
+
         $stmt = $this->db->prepare("
         SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage,
-        COALESCE(users.pathtopfp, '/images/assets/anonPfp.webp') AS pathtopfp
+        COALESCE(users.pathtopfp, :anonPath) AS pathtopfp
         FROM chatmessages
         LEFT JOIN users ON chatmessages.userId = users.id
         WHERE chatmessages.chatRoomId = (
@@ -52,6 +55,7 @@ class ChatModel extends BaseModel
         ORDER BY chatmessages.timestamp DESC
         LIMIT :limit OFFSET :offset
     ");
+        $stmt->bindParam(':anonPath', $this->anonPath);
         $stmt->bindParam(':name', $chatroomName);
         $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
@@ -97,7 +101,7 @@ class ChatModel extends BaseModel
     {
         $stmt = $this->db->prepare("
         SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage,
-        COALESCE(users.pathtopfp, '/images/assets/anonPfp.webp') AS pathtopfp
+        COALESCE(users.pathtopfp, :anonPath) AS pathtopfp
         FROM chatmessages
         LEFT JOIN users ON chatmessages.userId = users.id
         WHERE chatmessages.chatRoomId = (
@@ -106,7 +110,7 @@ class ChatModel extends BaseModel
         AND timestamp >= :timestamp
         ORDER BY chatmessages.timestamp DESC
         ");
-        $stmt->execute([':name' => $chatroomName, ':timestamp' => $timestamp]);
+        $stmt->execute([':name' => $chatroomName, ':timestamp' => $timestamp,':anonPath' => $this->anonPath]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -140,7 +144,7 @@ class ChatModel extends BaseModel
             return [];
         }
         $userId = $user['id'];
-        $userPfp = $user['pathtopfp'] ?: '/images/assets/anonPfp.webp';
+        $userPfp = $user['pathtopfp'] ?: $this->anonPath;
 
         $stmt = $this->db->prepare("
         SELECT chatmessages.id, chatmessages.message, chatmessages.timestamp, chatmessages.pathtoimage, chatmessages.chatRoomId,
@@ -153,7 +157,7 @@ class ChatModel extends BaseModel
         $stmt->bindValue(':uid', $userId, PDO::PARAM_INT);
         $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
-        $stmt->bindValue(':userPfp', $userPfp );
+        $stmt->bindValue(':userPfp', $userPfp);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

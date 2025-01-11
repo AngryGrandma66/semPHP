@@ -9,8 +9,13 @@ export async function renderView() {
         <div id="homeView">
             <span id="homeLoggedInUser"></span>
             
-            <input type="text" id="homeChatroomSearch" name="homeChatroomSearch" 
-                   class="chatroomSearch" placeholder="searchbar">
+            <input 
+                type="text" 
+                id="homeChatroomSearch" 
+                name="homeChatroomSearch" 
+                class="chatroomSearch" 
+                placeholder="searchbar"
+            />
             
             <div id="homeChatroomList" class="HomeChatroomList"></div>
             
@@ -19,24 +24,24 @@ export async function renderView() {
     `;
 
     const title = document.querySelector('title');
-    title.innerText = 'home';
+    title.innerText = 'Home';
 
     const displayedChatrooms = document.getElementById('homeChatroomList');
     const userData = await getCurrentUser();
     const searchBar = document.getElementById('homeChatroomSearch');
     const paginationBar = document.getElementById('chatroomPaginationBar');
+    const homeLoggedInUserSpan = document.getElementById('homeLoggedInUser');
 
     if (userData.success) {
-        document.getElementById('homeLoggedInUser').textContent =
-            `You are logged in as ${sanitize(userData.user)}`;
+        homeLoggedInUserSpan.textContent = `You are logged in as ${sanitize(userData.user)}`;
     } else {
-        document.getElementById('homeLoggedInUser').textContent = "You are not logged in";
+        homeLoggedInUserSpan.textContent = "You are not logged in";
     }
 
     let currentFilter = '';
     let currentPage = 1;
     let totalPages = 1;
-
+    const pageSize = 10;
 
     async function loadChatrooms(page, filter) {
         displayedChatrooms.innerHTML = '';
@@ -50,7 +55,7 @@ export async function renderView() {
 
         renderChatrooms(displayedChatrooms, resp.chatrooms);
 
-        totalPages = Math.ceil(resp.total / 10);
+        totalPages = Math.ceil(resp.total / pageSize);
 
         renderFancyPagination(
             paginationBar,
@@ -65,45 +70,61 @@ export async function renderView() {
 
     await loadChatrooms(currentPage, currentFilter);
 
+
     searchBar.addEventListener('keyup', () => {
-        currentFilter = searchBar.value;
+        currentFilter = searchBar.value.trim();
         currentPage = 1;
         loadChatrooms(currentPage, currentFilter);
-    });    if (userData.success) {
-        if (userData.role === 'admin' || userData.role === 'owner') {
-            const addChatroomForm = document.createElement('form')
-            addChatroomForm.id = 'addChatroomForm';
-            addChatroomForm.classList.add('addChatroom');
-            addChatroomForm.innerHTML = ` 
-            <input type="text" name="addChatroomInput" id="addChatroomInput" <input>
-            <button id="addChatroomButton" type="submit" class="addChatroomButton">Add Chatroom</button>
+    });
+
+    if (userData.success && (userData.role === 'admin' || userData.role === 'owner')) {
+        const addChatroomForm = document.createElement('form');
+        addChatroomForm.id = 'addChatroomForm';
+        addChatroomForm.classList.add('addChatroom');
+        addChatroomForm.innerHTML = `
+            <input 
+                type="text" 
+                name="addChatroomInput" 
+                id="addChatroomInput"
+                placeholder="Name of new chatroom"
+                pattern="^[A-Za-z0-9_]$"
+                minlength="3"
+                maxlength="100"
+            />
+            <button 
+                id="addChatroomButton" 
+                type="submit" 
+                class="addChatroomButton"
+            >
+                Add Chatroom
+            </button>
             <span id="addChatroomInputMessage"></span>
-            `
-            content.append(addChatroomForm)
-            document.getElementById('addChatroomForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const chatroomInput = document.getElementById('addChatroomInput')
-                const inputMessage = document.getElementById('addChatroomInputMessage')
-                addChatroom(chatroomInput.value.trim()).then(data => {
-                    if (data) {
-                        if (data.success) {
-                            chatroomInput.value = '';
-                            inputMessage.innerText = 'Chat room added successfully!';
-                            getChatrooms(searchBar.value, 1)
-                                .then(data => {
-                                        if (data.success) {
-                                            renderChatrooms(displayedChatrooms, data.chatrooms);
-                                        } else {
-                                            displayedChatrooms.innerHTML = '<p>No chatrooms found.</p>';
-                                        }
-                                    }
-                                )
-                        } else {
-                            inputMessage.innerText = 'error: ' + data.message;
-                        }
-                    }
-                })
-            })
-        }
+        `;
+        content.append(addChatroomForm);
+
+        addChatroomForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const chatroomInput = document.getElementById('addChatroomInput');
+            const inputMessage = document.getElementById('addChatroomInputMessage');
+            const chatroomValue = chatroomInput.value.trim();
+
+            if (!chatroomValue) {
+                inputMessage.innerText = 'Please enter a valid chatroom name';
+                return;
+            }
+
+            const data = await addChatroom(chatroomValue);
+            if (!data) return;
+
+            if (data.success) {
+                chatroomInput.value = '';
+                inputMessage.innerText = 'Chat room added successfully!';
+
+                currentPage = 1;
+                await loadChatrooms(currentPage, currentFilter);
+            } else {
+                inputMessage.innerText = `error: ${data.message}`;
+            }
+        });
     }
 }

@@ -10,12 +10,12 @@ class ChatController extends BaseController
     public function chatroomByName()
     {
         if (!isset($_GET['name'])) {
-            $this->sendJsonResponse(['success' => false, 'error' => 'This chatroom does not exist']);
+            $this->sendJsonResponse(['success' => false, 'error' => 'This chatroom does not exist'],404);
         }
         $name = $_GET['name'];
         $chatModel = new ChatModel();
         if (!$chatModel->getChatroomByName($name)) {
-            $this->sendJsonResponse(['success' => false, 'error' => 'This chatroom does not exist']);
+            $this->sendJsonResponse(['success' => false, 'error' => 'This chatroom does not exist'],404);
         }
         $this->sendJsonResponse(['success' => true, 'message' => 'This chatroom exists']);
 
@@ -120,7 +120,7 @@ class ChatController extends BaseController
         if (strlen($chatroomName) < 1 || strlen($chatroomName) > 50) {
             $this->sendJsonResponse(['success' => false, 'error' => 'chatroomName invalid'], 400);
         }
-        if (strlen($messageText) < 1 || strlen($messageText) > 1000) {
+        if (strlen($messageText) > 1000) {
             $this->sendJsonResponse(['success' => false, 'error' => 'message length out of range'], 400);
         }
         if (!empty($_FILES['message_image']['tmp_name'])) {
@@ -157,8 +157,7 @@ class ChatController extends BaseController
         if ($timestamp < 0) {
             $this->sendJsonResponse(['success' => false, 'error' => 'timestamp invalid'], 400);
         }
-        $timestamp_plus_one_hour = $timestamp + 3600;
-        $formattedTimestamp = date('Y-m-d H:i:s', $timestamp_plus_one_hour);
+        $formattedTimestamp = date('Y-m-d H:i:s', $timestamp);
         $chatModel = new ChatModel();
         $messages = $chatModel->getAllMessagesSince($chatroomName, $formattedTimestamp);
         foreach ($messages as &$message) {
