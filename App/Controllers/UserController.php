@@ -206,9 +206,6 @@ class UserController extends BaseController
             $this->sendJsonResponse(['success' => false, 'error' => 'This user does not exist'], 404);
         }
 
-        $user['username'] = $this->sanitizeOutput($user['username']);
-        $user['email'] = $this->sanitizeOutput($user['email']);
-        $user['role'] = $this->sanitizeOutput($user['role']);
 
         $this->sendJsonResponse(['success' => true, 'user' => $user]);
     }

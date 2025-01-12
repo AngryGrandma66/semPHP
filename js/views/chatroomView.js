@@ -25,6 +25,7 @@ export async function renderView() {
     content.innerHTML = `
     <div id="chatroomView">
       <aside>
+      <label for="chatroomSearch">Filer chat rooms </label>
           <input type="text" id="chatroomSearch"
                  name="chatroomSearch" class="chatroomSearch"
                  placeholder="searchbar" />
@@ -37,6 +38,7 @@ export async function renderView() {
           <div class="messageBox" id="messageBox"></div>
 
           <form id="sendMessageForm">
+          <label for="sendMessageInput">send message</label>
               <input type="text"
                      name="sendMessageInput"
                      id="sendMessageInput"
@@ -46,7 +48,6 @@ export async function renderView() {
                      maxlength="1000" 
                      required/>
               <span id="sendMessageError" class="error"></span>
-
               <input type="file"
                      name="messagePic"
                      accept=".webp, .png, .jpeg, .jpg"

@@ -42,7 +42,6 @@ class ProfileController extends BaseController
         $total = $chatModel->getUserMessagesCount($username);
 
         foreach ($messages as &$message) {
-            $message['message'] = $this->sanitizeOutput($message['message']);
             $message['timestamp'] = $this->dateConversion($message['timestamp']);
         }
 

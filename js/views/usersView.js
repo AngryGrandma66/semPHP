@@ -1,7 +1,8 @@
-
-import {getCurrentUser} from "../api/userApi.js";
-import {navigateTo} from "../router.js";
-import {getAllUsers, updateUserRole} from "../api/adminApi.js";
+import { getCurrentUser } from "../api/userApi.js";
+import { navigateTo } from "../router.js";
+import { getAllUsers, updateUserRole } from "../api/adminApi.js";
+import { sanitize } from "../misc/utils.js";
+import { renderFancyPagination } from "../misc/renderAdds.js";
 
 export async function renderView() {
     const content = document.getElementById('content');
@@ -11,10 +12,7 @@ export async function renderView() {
     content.innerHTML = `
       <h2>All Users</h2>
       <div id="userList"></div>
-
-      <div id="paginationBar" class="pagination-bar">
-      </div>
-
+      <div id="paginationBar" class="pagination-bar"></div>
       <p id="usersStatusMessage"></p>
     `;
 
@@ -35,9 +33,11 @@ export async function renderView() {
 
     let currentPage = 1;
     let totalPages = 1;
+    const usersPerPage = 8;
 
     async function loadPage(page) {
         userList.innerHTML = '';
+        statusMessage.textContent = '';
 
         const resp = await getAllUsers(page);
         if (!resp.success) {
@@ -45,17 +45,17 @@ export async function renderView() {
             return;
         }
 
-        totalPages = Math.ceil(resp.total / 8);
+        totalPages = Math.ceil(resp.total / usersPerPage);
 
         resp.users.forEach(user => {
             const userDiv = document.createElement('div');
             userDiv.classList.add('user-item');
             userDiv.innerHTML = `
-<img alt="${user.username} profile picture" src="${user.pathtopfp}"/>
-                <p>Username: ${user.username}</p>
-                <p>Email: ${user.email}</p>
-                <span >Role:<span class="user-role"> ${user.role}</span></span>
-            `;
+        <img alt="${sanitize(user.username)} profile picture" src="${sanitize(user.pathtopfp)}"/>
+        <p>Username: ${sanitize(user.username)}</p>
+        <p>Email: ${sanitize(user.email)}</p>
+        <span>Role: <span class="user-role">${sanitize(user.role)}</span></span>
+      `;
 
             if (user.role === 'user') {
                 const promoteBtn = document.createElement('button');
@@ -70,8 +70,7 @@ export async function renderView() {
                     }
                 });
                 userDiv.appendChild(promoteBtn);
-            }
-            else if (user.role === 'admin' && currentRole === 'owner') {
+            } else if (user.role === 'admin' && currentRole === 'owner') {
                 const demoteBtn = document.createElement('button');
                 demoteBtn.textContent = 'Demote to User';
                 demoteBtn.addEventListener('click', async () => {
@@ -89,44 +88,10 @@ export async function renderView() {
             userList.appendChild(userDiv);
         });
 
-        renderPagination(page, totalPages);
-    }
-
-    function renderPagination(page, total) {
-        paginationBar.innerHTML = '';
-
-        if (page > 1) {
-            const prevBtn = document.createElement('button');
-            prevBtn.textContent = 'Prev';
-            prevBtn.addEventListener('click', () => {
-                currentPage = page - 1;
-                loadPage(currentPage);
-            });
-            paginationBar.appendChild(prevBtn);
-        }
-
-        for (let p = 1; p <= total; p++) {
-            const pageBtn = document.createElement('button');
-            pageBtn.textContent = p.toString();
-            if (p === page) {
-                pageBtn.disabled = true;
-            }
-            pageBtn.addEventListener('click', () => {
-                currentPage = p;
-                loadPage(currentPage);
-            });
-            paginationBar.appendChild(pageBtn);
-        }
-
-        if (page < total) {
-            const nextBtn = document.createElement('button');
-            nextBtn.textContent = 'Next';
-            nextBtn.addEventListener('click', () => {
-                currentPage = page + 1;
-                loadPage(currentPage);
-            });
-            paginationBar.appendChild(nextBtn);
-        }
+        renderFancyPagination(paginationBar, page, totalPages, (pageNum) => {
+            currentPage = pageNum;
+            loadPage(currentPage);
+        });
     }
 
     await loadPage(currentPage);

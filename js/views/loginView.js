@@ -8,7 +8,6 @@ export function renderView() {
     <form id="loginForm">
       <h2>Login</h2>
 
-      <!-- Single field for either username or email -->
       <div class="form-group">
         <label for="loginInput">Username or Email:</label>
         <input
@@ -20,7 +19,6 @@ export function renderView() {
         />
       </div>
 
-      <!-- Password -->
       <div class="form-group">
         <label for="password">Password:</label>
         <input

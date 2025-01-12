@@ -82,6 +82,12 @@ export async function setupNavbar() {
         registerLink.classList.add('navbar-link');
         navbar.appendChild(registerLink);
     }
+
+    const docsLink= document.createElement('a');
+    docsLink.href = '/docs/';
+    docsLink.textContent = 'Docs';
+    docsLink.classList.add('navbar-link');
+    navbar.appendChild(docsLink);
     const logoutButton = document.getElementById('logoutButton');
     if (logoutButton) {
         logoutButton.addEventListener('click', async () => {

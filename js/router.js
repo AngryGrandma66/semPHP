@@ -1,6 +1,4 @@
-// /js/router.js
 
-// 1. Define routes as you do now
 const routes = {
     '/': 'home',
     '/home': 'home',
@@ -11,10 +9,8 @@ const routes = {
     '/users': 'users',
 };
 
-// 2. Set your BASE_PATH to /~krupima3 for production, or '' (empty) for dev
 const BASE_PATH = '/~krupima3';
 
-// 3. The matchRoute logic remains unchanged
 function matchRoute(path, routes) {
     for (const routePattern in routes) {
         const paramNames = [];
@@ -38,29 +34,28 @@ function matchRoute(path, routes) {
     return null;
 }
 
-// 4. Export the initRouter + navigateTo as usual
 export function initRouter() {
     window.addEventListener('popstate', handleRoute);
     handleRoute();
 }
 
 export function navigateTo(path) {
-    // e.g. navigateTo('/home') => pushState to /~krupima3/home
     history.pushState({}, '', BASE_PATH + path);
     handleRoute();
 }
 
 async function handleRoute() {
-    // 5. Grab the real location.pathname
     let path = window.location.pathname;
 
-    // If it starts with /~krupima3, remove that prefix
     if (BASE_PATH && path.startsWith(BASE_PATH)) {
         path = path.slice(BASE_PATH.length);
-        // Now for /~krupima3/home => path = /home
     }
 
-    // Now do your route matching
+    if (path.startsWith('/docs/')) {
+        window.location.href = BASE_PATH + path;
+        return;
+    }
+
     const match = matchRoute(path, routes);
     if (!match) {
         import('./views/notFoundView.js').then(module => module.renderView());

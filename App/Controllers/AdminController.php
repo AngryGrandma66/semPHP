@@ -43,10 +43,6 @@ class AdminController extends BaseController
         $users = $userModel->getAllUsers($offset, $limit);
         $total = $userModel->getUsersCount();
 
-        foreach ($users as &$user) {
-            $user['username'] = $this->sanitizeOutput($user['username']);
-            $user['email']    = $this->sanitizeOutput($user['email']);
-        }
 
         $this->sendJsonResponse([
             'success' => true,

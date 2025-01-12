@@ -82,6 +82,7 @@ export async function renderView() {
         addChatroomForm.id = 'addChatroomForm';
         addChatroomForm.classList.add('addChatroom');
         addChatroomForm.innerHTML = `
+<label for="addChatroomInput">Add chatroom</label>
             <input 
                 type="text" 
                 name="addChatroomInput" 

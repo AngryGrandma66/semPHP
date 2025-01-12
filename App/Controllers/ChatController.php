@@ -68,9 +68,6 @@ class ChatController extends BaseController
             $this->sendJsonResponse(['success' => false, 'error' => 'No chatrooms were found']);
         }
 
-        foreach ($chatrooms as &$c) {
-            $c['name'] = $this->sanitizeOutput($c['name']);
-        }
 
         $totalCount = $chatModel->getChatroomsCount($filter);
 
@@ -112,8 +109,6 @@ class ChatController extends BaseController
         $messages = $chatModel->getMessagesForChatroom($chatroomName, $messageOffset, 20);
 
         foreach ($messages as &$msg) {
-            $msg['message'] = $this->sanitizeOutput($msg['message']);
-            $msg['username'] = $this->sanitizeOutput($msg['username']);
             $msg['timestamp'] = $this->dateConversion($msg['timestamp']);
         }
 
@@ -225,8 +220,6 @@ class ChatController extends BaseController
         $chatModel = new ChatModel();
         $messages = $chatModel->getAllMessagesSince($chatroomName, $formattedTimestamp);
         foreach ($messages as &$message) {
-            $message['message'] = $this->sanitizeOutput($message['message']);
-            $message['username'] = $this->sanitizeOutput($message['username']);
             $message['timestamp'] = $this->dateConversion($message['timestamp']);
         }
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
