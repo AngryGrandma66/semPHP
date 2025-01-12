@@ -151,14 +151,12 @@ export async function renderView() {
         await sendMessage(chatroomNameFromUrl, message, file);
         messageInput.value = '';
         fileInput.value = '';
-        savedTimestamp = Math.floor(Date.now() / 1000);
-        await latestMessages();
     });
 
     await loadMessages(false);
     setInterval(async () => {
         await latestMessages();
-    }, 3000);
+    }, 1000);
 }
 
 function renderMessages(root, messages, prepend = false) {

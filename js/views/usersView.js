@@ -51,10 +51,9 @@ export async function renderView() {
             const userDiv = document.createElement('div');
             userDiv.classList.add('user-item');
             userDiv.innerHTML = `
-                <hr>
-                <strong>Username:</strong> ${user.username}<br>
-                <strong>Email:</strong> ${user.email}<br>
-                <strong>Role:</strong> 
+                <p>Username: ${user.username}</p>
+                <p>Email: ${user.email}</p>
+                <p>Role:</p>
                 <span class="user-role">${user.role}</span>
             `;
 

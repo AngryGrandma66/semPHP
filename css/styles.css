@@ -1,0 +1,248 @@
+/* ----- Rosé Pine color palette ----- */
+:root {
+    --base: #191724;
+    --surface: #1f1d2e;
+    --overlay: #26233a;
+    --muted: #6e6a86;
+    --subtle: #908caa;
+    --text: #e0def4;
+    --love: #eb6f92;
+    --gold: #f6c177;
+    --rose: #ebbcba;
+    --pine: #31748f;
+    --foam: #9ccfd8;
+    --iris: #c4a7e7;
+    --highlight-low: #21202e;
+    --highlight-med: #403d52;
+    --highlight-high: #524f67;
+
+    /* Common layout & typography variables */
+    --spacing: 0.75rem;
+    --border-radius: 4px;
+    --font-family: "Arial", sans-serif;
+    --transition-speed: 0.2s;
+    --max-content-width: 700px;
+}
+
+/* ----- Global Resets & Base Styles ----- */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--base);
+    color: var(--text);
+    font-family: var(--font-family);
+}
+
+/* ----- Navbar ----- */
+nav {
+    background-color: var(--overlay);
+    padding: var(--spacing);
+    display: flex;
+    gap: var(--spacing);
+}
+
+.navbar-link {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: bold;
+    transition: color var(--transition-speed);
+}
+.navbar-link:hover {
+    color: var(--foam);
+}
+
+/* ----- Main content area ----- */
+#content {
+    padding: var(--spacing);
+    margin: 1rem auto;
+    max-width: var(--max-content-width);
+    background-color: var(--surface);
+    border-radius: var(--border-radius);
+}
+
+/* ----- Headings, text, etc. ----- */
+h2 {
+    margin-top: 0;
+    color: var(--text);
+}
+p {
+    color: var(--text);
+}
+
+/* ========================================================================== */
+/*                      REGISTER PAGE-SPECIFIC STYLES                         */
+/* ========================================================================== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.25rem;
+    color: var(--subtle);
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    padding: 0.5rem;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--overlay);
+    color: var(--text);
+    transition: border-color var(--transition-speed);
+}
+.form-group input:focus {
+    outline: none;
+    border-color: var(--pine);
+}
+
+/* Helper text below inputs */
+.inputHelper {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+/* Error messages */
+.error {
+    font-size: 0.85rem;
+    color: var(--love);
+    margin-top: 0.25rem;
+}
+
+/* ----- File upload styling for Register Page ----- */
+.form-group input[type="file"] {
+    /* Hide default input visually but keep accessible */
+    opacity: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.form-group label[for="profile_pic"] {
+    /* This label acts as the 'button' to open file dialog */
+    display: inline-block;
+    background-color: var(--overlay);
+    color: var(--text);
+    border: 1px solid var(--highlight-low);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+    width: fit-content;
+}
+.form-group label[for="profile_pic"]:hover {
+    background-color: var(--highlight-low);
+}
+.form-group label[for="profile_pic"]:focus {
+    outline: 1px solid var(--pine);
+    outline-offset: 2px;
+}
+.fileNameDisplay {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+/* ----- Submit button styling ----- */
+button[type="submit"] {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--pine);
+    color: var(--text);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+button[type="submit"]:hover {
+    background-color: var(--rose);
+}
+
+/* ========================================================================== */
+/*                      HOME PAGE-SPECIFIC STYLES                             */
+/* ========================================================================== */
+
+/* Chatroom search input on the home page */
+.chatroomSearch {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 1rem 0;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--overlay);
+    color: var(--text);
+    transition: border-color var(--transition-speed);
+}
+.chatroomSearch:focus {
+    border-color: var(--pine);
+    outline: none;
+}
+
+/* The container that lists chatrooms; fix a height so it won't expand/contract */
+.HomeChatroomList {
+    height: 300px;         /* or any fixed height you prefer */
+    overflow-y: auto;      /* allows scrolling if the list is too long */
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--overlay);
+    padding: var(--spacing);
+}
+
+/* The list inside the chatroom container */
+.HomeChatroomList ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.HomeChatroomList li {
+    margin-bottom: 0.5rem;
+}
+.HomeChatroomList a {
+    text-decoration: none;
+    color: var(--text);
+    transition: color var(--transition-speed);
+}
+.HomeChatroomList a:hover {
+    color: var(--foam);
+}
+
+/* Pagination bar for the home page chatrooms */
+.pagination-bar {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pagination-bar button {
+    background-color: var(--overlay);
+    color: var(--text);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+.pagination-bar button:hover {
+    background-color: var(--highlight-low);
+}
+.pagination-bar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* To highlight who is logged in on the home page (optional) */
+#homeLoggedInUser {
+    display: inline-block;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--foam);
+    font-weight: bold;
+}

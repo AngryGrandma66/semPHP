@@ -101,6 +101,7 @@ export async function renderView() {
             const userPfpImg = document.createElement('img');
             userPfpImg.src = msg.pathtopfp || '/images/assets/anonPfp.webp';
             userPfpImg.classList.add('user-pfp-in-message');
+            userPfpImg.alt = 'Profile Pfp';
             messageDiv.appendChild(userPfpImg);
 
             const messageText = document.createElement('p');

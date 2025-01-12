@@ -122,7 +122,7 @@ class ChatModel extends BaseModel
         WHERE name LIKE :filter
     ");
 
-        $filter = $filter . '%';
+        $filter = '%'. $filter . '%';
         $stmt->bindValue(':filter', $filter);
         $stmt->execute();
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);

@@ -72,7 +72,7 @@ export function renderView() {
         id="profile_pic"
         required
         />
-        
+        <span class="fileNameDisplay" id="fileNameDisplay"></span>  
         <span id="fileError" class="error"></span>
        </div>
       <button type="submit">Register</button>
@@ -82,6 +82,16 @@ export function renderView() {
     title.innerText = 'Register';
     const form = document.getElementById('registerForm');
 
+    const fileInput = document.getElementById('profile_pic');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            fileNameDisplay.textContent = fileInput.files[0].name;
+        } else {
+            fileNameDisplay.textContent = '';
+        }
+    });
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -91,7 +101,6 @@ export function renderView() {
         document.getElementById('passwordError').textContent = '';
         document.getElementById('confirmPasswordError').textContent = '';
         document.getElementById('fileError').textContent = '';
-
         if (document.getElementById('password').value !== document.getElementById('confirmPassword').value) {
 
             document.getElementById('confirmPasswordError').textContent ='Passwords do not match'
