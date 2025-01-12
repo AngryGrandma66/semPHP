@@ -159,7 +159,7 @@ button[type="submit"]:hover {
 }
 
 .chatroomSearch {
-    width: 100%;
+    width: 98.5%;
     padding: 0.5rem;
     margin: 1rem 0;
     border: 1px solid var(--highlight-low);

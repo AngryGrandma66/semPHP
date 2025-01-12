@@ -47,9 +47,9 @@ class UserModel extends BaseModel
      * Fetches user info (including password) by username for authentication checks.
      *
      * @param string $username
-     * @return array|null
+     * @return mixed
      */
-    public function getUserByUsernameValidation(string $username): ?array
+    public function getUserByUsernameValidation(string $username): mixed
     {
         $stmt = $this->db->prepare(
             "SELECT username,password,role FROM users WHERE username = :u"
