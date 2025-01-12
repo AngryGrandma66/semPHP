@@ -54,8 +54,7 @@ export async function renderView() {
 <img alt="${user.username} profile picture" src="${user.pathtopfp}"/>
                 <p>Username: ${user.username}</p>
                 <p>Email: ${user.email}</p>
-                <p>Role:</p>
-                <span class="user-role">${user.role}</span>
+                <p >Role: ${user.role}</p>
             `;
 
             if (user.role === 'user') {

@@ -721,10 +721,6 @@ button[type="submit"]:hover {
     color: var(--text);
 }
 
-.user-item .user-role {
-    font-weight: bold;
-    color: var(--foam);
-}
 
 .user-item button {
     padding: 0.4rem 0.8rem;
@@ -767,4 +763,47 @@ button[type="submit"]:hover {
     margin-top: 1rem;
     color: var(--love);
     font-weight: bold;
+}
+
+
+
+
+@media print {
+    html, body {
+        background-color: #fff !important;
+        color: #000 !important;
+    }
+
+    :root {
+        --base: #fff;
+        --surface: #fff;
+        --overlay: #fff;
+        --muted: #666;
+        --subtle: #555;
+        --text: #000;
+    }
+
+    nav,
+    .navbar-link,
+    #logoutButton {
+        display: none !important;
+    }
+
+    #content {
+        background-color: #fff !important;
+        border: none !important;
+    }
+
+    img {
+        display: none;
+    }
+
+    form, .form-group {
+        border: none !important;
+        background: transparent !important;
+    }
+
+    button {
+        display: none !important;
+    }
 }
