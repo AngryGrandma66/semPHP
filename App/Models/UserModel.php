@@ -49,7 +49,7 @@ class UserModel extends BaseModel
     public function getAllUsers($offset, $limit)
     {
         $stmt = $this->db->prepare("
-        SELECT username, email, role
+        SELECT username, email, role,pathtopfp
         FROM users
         ORDER BY username
         LIMIT :limit OFFSET :offset

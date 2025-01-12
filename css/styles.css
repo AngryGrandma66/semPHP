@@ -1,4 +1,3 @@
-/* ----- Rosé Pine color palette ----- */
 :root {
     --base: #191724;
     --surface: #1f1d2e;
@@ -16,15 +15,13 @@
     --highlight-med: #403d52;
     --highlight-high: #524f67;
 
-    /* Common layout & typography variables */
     --spacing: 0.75rem;
     --border-radius: 4px;
     --font-family: "Arial", sans-serif;
     --transition-speed: 0.2s;
-    --max-content-width: 70vw;
+    --max-content-width: 85vw;
 }
 
-/* ----- Global Resets & Base Styles ----- */
 html, body {
     margin: 0;
     padding: 0;
@@ -33,7 +30,6 @@ html, body {
     font-family: var(--font-family), sans-serif;
 }
 
-/* ----- Navbar ----- */
 nav {
     background-color: var(--overlay);
     padding: var(--spacing);
@@ -47,11 +43,11 @@ nav {
     font-weight: bold;
     transition: color var(--transition-speed);
 }
+
 .navbar-link:hover {
     color: var(--foam);
 }
 
-/* ----- Main content area ----- */
 #content {
     padding: var(--spacing);
     margin: 1rem auto;
@@ -60,18 +56,15 @@ nav {
     border-radius: var(--border-radius);
 }
 
-/* ----- Headings, text, etc. ----- */
 h2 {
     margin-top: 0;
     color: var(--text);
 }
+
 p {
     color: var(--text);
 }
 
-/* ========================================================================== */
-/*                      REGISTER PAGE-SPECIFIC STYLES                         */
-/* ========================================================================== */
 form {
     display: flex;
     flex-direction: column;
@@ -99,34 +92,30 @@ form {
     color: var(--text);
     transition: border-color var(--transition-speed);
 }
+
 .form-group input:focus {
     outline: none;
     border-color: var(--pine);
 }
 
-/* Helper text below inputs */
 .inputHelper {
     font-size: 0.85rem;
     color: var(--muted);
 }
 
-/* Error messages */
 .error {
     font-size: 0.85rem;
     color: var(--love);
     margin-top: 0.25rem;
 }
 
-/* ----- File upload styling for Register Page ----- */
 .form-group input[type="file"] {
-    /* Hide default input visually but keep accessible */
     opacity: 0;
     position: absolute;
     pointer-events: none;
 }
 
 .form-group label[for="profile_pic"] {
-    /* This label acts as the 'button' to open file dialog */
     display: inline-block;
     background-color: var(--overlay);
     color: var(--text);
@@ -137,20 +126,22 @@ form {
     transition: background-color var(--transition-speed), border-color var(--transition-speed);
     width: fit-content;
 }
+
 .form-group label[for="profile_pic"]:hover {
     background-color: var(--highlight-low);
 }
+
 .form-group label[for="profile_pic"]:focus {
     outline: 1px solid var(--pine);
     outline-offset: 2px;
 }
+
 .fileNameDisplay {
     margin-top: 0.25rem;
     font-size: 0.9rem;
     color: var(--muted);
 }
 
-/* ----- Submit button styling ----- */
 button[type="submit"] {
     align-self: flex-start;
     padding: 0.5rem 1rem;
@@ -162,15 +153,11 @@ button[type="submit"] {
     cursor: pointer;
     transition: background-color var(--transition-speed);
 }
+
 button[type="submit"]:hover {
     background-color: var(--rose);
 }
 
-/* ========================================================================== */
-/*                      HOME PAGE-SPECIFIC STYLES                             */
-/* ========================================================================== */
-
-/* Chatroom search input on the home page */
 .chatroomSearch {
     width: 100%;
     padding: 0.5rem;
@@ -181,40 +168,41 @@ button[type="submit"]:hover {
     color: var(--text);
     transition: border-color var(--transition-speed);
 }
+
 .chatroomSearch:focus {
     border-color: var(--pine);
     outline: none;
 }
 
-/* The container that lists chatrooms; fix a height so it won't expand/contract */
 .HomeChatroomList {
-    height: 300px;         /* or any fixed height you prefer */
-    overflow-y: auto;      /* allows scrolling if the list is too long */
+    height: 300px;
+    overflow-y: auto;
     border: 1px solid var(--highlight-low);
     border-radius: var(--border-radius);
     background-color: var(--overlay);
     padding: var(--spacing);
 }
 
-/* The list inside the chatroom container */
 .HomeChatroomList ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
+
 .HomeChatroomList li {
     margin-bottom: 0.5rem;
 }
+
 .HomeChatroomList a {
     text-decoration: none;
     color: var(--text);
     transition: color var(--transition-speed);
 }
+
 .HomeChatroomList a:hover {
     color: var(--foam);
 }
 
-/* Pagination bar for the home page chatrooms */
 .pagination-bar {
     margin-top: 1rem;
     display: flex;
@@ -230,19 +218,553 @@ button[type="submit"]:hover {
     cursor: pointer;
     transition: background-color var(--transition-speed), border-color var(--transition-speed);
 }
+
 .pagination-bar button:hover {
     background-color: var(--highlight-low);
 }
+
 .pagination-bar button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-/* To highlight who is logged in on the home page (optional) */
+#addChatroomInput {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--overlay);
+    color: var(--text);
+    transition: border-color var(--transition-speed);
+}
+
+
 #homeLoggedInUser {
     display: inline-block;
     margin-top: 1rem;
     margin-bottom: 0.5rem;
     color: var(--foam);
+    font-weight: bold;
+}
+
+
+#chatroomView {
+    height: 80vh;
+    display: flex;
+    gap: var(--spacing);
+    margin: 0 auto;
+    max-width: var(--max-content-width);
+    background-color: var(--surface);
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+}
+
+#chatroomView aside {
+    width: 25%;
+    background-color: var(--overlay);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
+}
+
+#chatroomView #chatroomSearch {
+    width: 95%;
+    padding: 0.5rem;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--surface);
+    color: var(--text);
+    transition: border-color var(--transition-speed);
+}
+
+#chatroomView #chatroomSearch:focus {
+    border-color: var(--pine);
+    outline: none;
+}
+
+#chatroomView #asideChatroomList {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--overlay);
+    padding: var(--spacing);
+}
+
+#chatroomView #asideChatroomList ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#chatroomView #asideChatroomList li {
+    margin-bottom: 0.5rem;
+}
+
+#chatroomView #asideChatroomList a {
+    text-decoration: none;
+    color: var(--text);
+    transition: color var(--transition-speed);
+}
+
+#chatroomView #asideChatroomList a:hover {
+    color: var(--foam);
+}
+
+#chatroomView #asideChatroomPaginationBar {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#chatroomView #asideChatroomPaginationBar button {
+    background-color: var(--overlay);
+    color: var(--text);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+#chatroomView #asideChatroomPaginationBar button:hover {
+    background-color: var(--highlight-low);
+}
+
+#chatroomView #asideChatroomPaginationBar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#chatroomView .chatAreaWrapper {
+    width: 72%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
+    background-color: var(--overlay);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+}
+
+#chatroomView #loadMoreButton {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--pine);
+    color: var(--text);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+#chatroomView #loadMoreButton:hover {
+    background-color: var(--rose);
+}
+
+#chatroomView .messageBox {
+    width: 97%;
+    overflow-y: auto;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--surface);
+    padding: var(--spacing);
+}
+
+#chatroomView .message {
+    display: flex;
+    gap: var(--spacing);
+    margin-bottom: 1rem;
+}
+
+#chatroomView .profile-pic {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--highlight-low);
+}
+
+#chatroomView .message-content {
+    max-width: 87%;
+    background-color: var(--overlay);
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+    flex: 1;
+    border: 1px solid var(--highlight-low);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+#chatroomView .username {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: var(--foam);
+}
+
+#chatroomView .username a {
+    text-decoration: none;
+    color: var(--foam);
+}
+
+#chatroomView .username a:hover {
+    text-decoration: underline;
+}
+
+#chatroomView .message-text {
+    color: var(--text);
+    margin-bottom: 0.25rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+#chatroomView .timestamp {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+#chatroomView .message-image {
+    margin-top: 0.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--highlight-low);
+}
+
+#chatroomView #sendMessageForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing);
+    align-items: flex-start;
+}
+
+#chatroomView #sendMessageInput {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--surface);
+    color: var(--text);
+    transition: border-color var(--transition-speed);
+    overflow: auto;
+    width: 97%;
+}
+
+#chatroomView #sendMessageInput:focus {
+    border-color: var(--pine);
+    outline: none;
+}
+
+#chatroomView #senMessageError,
+#chatroomView #fileError {
+    color: var(--love);
+    font-size: 0.85rem;
+}
+
+#chatroomView #messagePic {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+}
+
+#chatroomView #messagePic + .labelFile {
+    display: inline-block;
+    background-color: var(--overlay);
+    color: var(--text);
+    border: 1px solid var(--highlight-low);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+#chatroomView #messagePic + .labelFile:hover {
+    background-color: var(--highlight-low);
+}
+
+#chatroomView #sendMessageForm button[type="submit"] {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--gold);
+    color: var(--text);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+#chatroomView #sendMessageForm button[type="submit"]:hover {
+    background-color: var(--rose);
+}
+
+#chatroomView .fileNameDisplay {
+    width: 100%;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-left: 0.5rem;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#chatroomView label[for="messagePic"] {
+    display: inline-block;
+    background-color: var(--muted);
+    color: var(--text);
+    border: 1px solid var(--highlight-low);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+    width: fit-content;
+}
+
+#chatroomView label[for="messagePic"]:hover {
+    background-color: var(--highlight-low);
+}
+
+#chatroomView label[for="messagePic"]:focus {
+    outline: 1px solid var(--pine);
+    outline-offset: 2px;
+}
+
+
+
+#profileBox.profileBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--overlay);
+    padding: var(--spacing);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    max-width: 400px;
+    margin: 0 auto var(--spacing) auto;
+}
+
+#profileBox .profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--highlight-low);
+    margin-bottom: var(--spacing);
+}
+
+#profileBox #username {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--foam);
+}
+
+#profileBox #email,
+#profileBox #role {
+    color: var(--text);
+    margin: 0.25rem 0;
+}
+
+#userMessagesSection {
+    background-color: var(--overlay);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+#userMessagesSection h3 {
+    margin-top: 0;
+    color: var(--foam);
+    font-size: 1.2rem;
+}
+
+#userMessagesList {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    background-color: var(--surface);
+    padding: var(--spacing);
+    margin-bottom: var(--spacing);
+}
+
+.user-message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing);
+    margin-bottom: 1rem;
+    position: relative;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+.user-message .user-pfp-in-message {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--highlight-low);
+}
+
+.user-message .message-text,
+.user-message .edit-message-input {
+    color: var(--text);
+    background-color: var(--overlay);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    margin-right: var(--spacing);
+}
+
+.user-message .edit-message-input {
+    min-width: 120px;
+    outline: none;
+    resize: none;
+}
+
+.user-message .message-timestamp {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 0.25rem 0;
+    align-self: flex-end;
+}
+
+.user-message .edit-button,
+.user-message button {
+    background-color: var(--highlight-low);
+    color: var(--text);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    transition: background-color var(--transition-speed);
+}
+
+.user-message .edit-button:hover,
+.user-message button:hover {
+    background-color: var(--pine);
+}
+
+.user-message .edit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#userMessagesSection .pagination-bar {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+#userMessagesSection .pagination-bar button {
+    background-color: var(--overlay);
+    color: var(--text);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+#userMessagesSection .pagination-bar button:hover {
+    background-color: var(--highlight-low);
+}
+
+#userMessagesSection .pagination-bar button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+#userList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--spacing);
+    margin-top: 1rem;
+}
+
+.user-item {
+    background-color: var(--overlay);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: var(--spacing);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-item img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    margin-bottom: 0.5rem;
+}
+
+.user-item p {
+    margin: 0.25rem 0;
+    color: var(--text);
+}
+
+.user-item .user-role {
+    font-weight: bold;
+    color: var(--foam);
+}
+
+.user-item button {
+    padding: 0.4rem 0.8rem;
+    background-color: var(--pine);
+    color: var(--text);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+.user-item button:hover {
+    background-color: var(--rose);
+}
+
+#paginationBar {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+#paginationBar button {
+    background-color: var(--overlay);
+    color: var(--text);
+    border: 1px solid var(--highlight-low);
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+#paginationBar button:hover {
+    background-color: var(--highlight-low);
+}
+#paginationBar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#usersStatusMessage {
+    margin-top: 1rem;
+    color: var(--love);
     font-weight: bold;
 }

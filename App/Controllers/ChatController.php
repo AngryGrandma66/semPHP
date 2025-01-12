@@ -98,10 +98,10 @@ class ChatController extends BaseController
             $this->sendJsonResponse(['success' => false, 'message' => 'chatroomName is required']);
         }
 
-        if (!preg_match('/^[A-Za-z0-9_]{3,50}$/', $chatroomName)) {
+        if (!preg_match('/^[A-Za-z0-9_]{3,20}$/', $chatroomName)) {
             $this->sendJsonResponse([
                 'success' => false,
-                'message' => 'Chatroom name must be 3–50 chars long and only contain letters, digits, or underscores.'
+                'message' => 'Chatroom name must be 3–20 chars long and only contain letters, digits, or underscores.'
             ]);
         }
         $chatModel = new ChatModel();
@@ -117,10 +117,10 @@ class ChatController extends BaseController
         $messageText = $_POST['message'] ?? '';
         $imagePath = null;
 
-        if (strlen($chatroomName) < 1 || strlen($chatroomName) > 50) {
+        if (strlen($chatroomName) < 1 || strlen($chatroomName) > 30) {
             $this->sendJsonResponse(['success' => false, 'error' => 'chatroomName invalid'], 400);
         }
-        if (strlen($messageText) > 1000) {
+        if (strlen($messageText)<1 ||strlen($messageText) > 1000) {
             $this->sendJsonResponse(['success' => false, 'error' => 'message length out of range'], 400);
         }
         if (!empty($_FILES['message_image']['tmp_name'])) {

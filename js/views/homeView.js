@@ -87,9 +87,8 @@ export async function renderView() {
                 name="addChatroomInput" 
                 id="addChatroomInput"
                 placeholder="Name of new chatroom"
-                pattern="^[A-Za-z0-9_]$"
                 minlength="3"
-                maxlength="100"
+                maxlength="20"
             />
             <button 
                 id="addChatroomButton" 

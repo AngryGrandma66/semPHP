@@ -162,7 +162,7 @@ export async function renderView() {
         await sendMessage(chatroomNameFromUrl, message, file);
         messageInput.value = '';
         fileInput.value = '';
-
+        fileNameDisplay.textContent = '';
         await latestMessages();
     });
 

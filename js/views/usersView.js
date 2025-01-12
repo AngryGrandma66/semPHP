@@ -51,6 +51,7 @@ export async function renderView() {
             const userDiv = document.createElement('div');
             userDiv.classList.add('user-item');
             userDiv.innerHTML = `
+<img alt="${user.username} profile picture" src="${user.pathtopfp}"/>
                 <p>Username: ${user.username}</p>
                 <p>Email: ${user.email}</p>
                 <p>Role:</p>
