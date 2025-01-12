@@ -21,7 +21,7 @@
     --border-radius: 4px;
     --font-family: "Arial", sans-serif;
     --transition-speed: 0.2s;
-    --max-content-width: 700px;
+    --max-content-width: 70vw;
 }
 
 /* ----- Global Resets & Base Styles ----- */
@@ -30,7 +30,7 @@ html, body {
     padding: 0;
     background-color: var(--base);
     color: var(--text);
-    font-family: var(--font-family);
+    font-family: var(--font-family), sans-serif;
 }
 
 /* ----- Navbar ----- */

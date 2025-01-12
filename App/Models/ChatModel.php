@@ -45,7 +45,7 @@ class ChatModel extends BaseModel
     {
 
         $stmt = $this->db->prepare("
-        SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage,
+        SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage,chatmessages.id,
         COALESCE(users.pathtopfp, :anonPath) AS pathtopfp
         FROM chatmessages
         LEFT JOIN users ON chatmessages.userId = users.id
@@ -100,7 +100,7 @@ class ChatModel extends BaseModel
     public function getAllMessagesSince($chatroomName, $timestamp)
     {
         $stmt = $this->db->prepare("
-        SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage,
+        SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage, chatmessages.id,
         COALESCE(users.pathtopfp, :anonPath) AS pathtopfp
         FROM chatmessages
         LEFT JOIN users ON chatmessages.userId = users.id
