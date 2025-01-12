@@ -4,10 +4,23 @@ namespace App\Controllers;
 
 
 use App\Models\ChatModel;
+use JetBrains\PhpStorm\NoReturn;
 
 class ProfileController extends BaseController
 {
-    public function getUserMessages()
+    /**
+     * Retrieves messages belonging to a particular user, with pagination.
+     *
+     * Requirements:
+     * - `$_GET['username']`: The user's username (2–50 chars).
+     * - `$_GET['offset']`: The page offset (int).
+     *
+     * Behavior:
+     * - Returns an array of messages plus the total count.
+     *
+     * @return void
+     */
+    #[NoReturn] public function getUserMessages(): void
     {
         if (!isset($_GET['username']) || !isset($_GET['offset'])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing parameters'], 400);
@@ -39,8 +52,16 @@ class ProfileController extends BaseController
             'total' => $total,
         ]);
     }
-
-    public function editMessage()
+    /**
+     * Edits a message if it belongs to the logged-in user.
+     *
+     * Requirements:
+     * - A JSON body with "messageId" (int) and "message" (string).
+     * - The logged-in user must own the message.
+     *
+     * @return void
+     */
+    #[NoReturn] public function editMessage(): void
     {
 
         if (!isset($_SESSION['username'])) {

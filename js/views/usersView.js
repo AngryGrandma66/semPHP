@@ -54,7 +54,7 @@ export async function renderView() {
 <img alt="${user.username} profile picture" src="${user.pathtopfp}"/>
                 <p>Username: ${user.username}</p>
                 <p>Email: ${user.email}</p>
-                <p >Role: ${user.role}</p>
+                <span >Role:<span class="user-role"> ${user.role}</span></span>
             `;
 
             if (user.role === 'user') {
@@ -63,7 +63,7 @@ export async function renderView() {
                 promoteBtn.addEventListener('click', async () => {
                     const updateResponse = await updateUserRole(user.username, 'admin');
                     if (updateResponse.success) {
-                        userDiv.querySelector('.user-role').textContent = 'admin';
+                        userDiv.querySelector('.user-role').textContent = ' admin';
                         promoteBtn.remove();
                     } else {
                         alert(updateResponse.error || 'Could not promote user');
@@ -77,7 +77,7 @@ export async function renderView() {
                 demoteBtn.addEventListener('click', async () => {
                     const updateResponse = await updateUserRole(user.username, 'user');
                     if (updateResponse.success) {
-                        userDiv.querySelector('.user-role').textContent = 'user';
+                        userDiv.querySelector('.user-role').textContent = ' user';
                         demoteBtn.remove();
                     } else {
                         alert(updateResponse.error || 'Could not demote user');

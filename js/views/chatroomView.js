@@ -42,8 +42,10 @@ export async function renderView() {
                      id="sendMessageInput"
                      class="messageSearch"
                      placeholder="sendMessage"
-                     maxlength="1000" />
-              <span id="senMessageError" class="error"></span>
+                     minlength="1"
+                     maxlength="1000" 
+                     required/>
+              <span id="sendMessageError" class="error"></span>
 
               <input type="file"
                      name="messagePic"
@@ -150,22 +152,51 @@ export async function renderView() {
         }
     });
 
+    const messageErrorEl = document.getElementById('sendMessageError');
+    const fileErrorEl = document.getElementById('fileError');
+
     sendMessageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!chatroomNameFromUrl) {
+
+        messageErrorEl.textContent = '';
+        fileErrorEl.textContent = '';
+
+        const message = messageInput.value.trim();
+        const file = fileInput.files?.[0] || null;
+
+        if (message === '') {
+            messageErrorEl.textContent = 'Please enter a message.';
             return;
         }
 
-        const message = messageInput.value.trim();
+        const result = await sendMessage(chatroomNameFromUrl, message, file);
 
-        const file = fileInput.files?.[0] || null;
-        await sendMessage(chatroomNameFromUrl, message, file);
-        messageInput.value = '';
-        fileInput.value = '';
-        fileNameDisplay.textContent = '';
-        await latestMessages();
+        if (!result.success) {
+            if (result.errors.fileError) {
+                fileErrorEl.textContent = result.errors.fileError;
+            }
+            if (result.textError) {
+                messageErrorEl.textContent = result.textError;
+            }
+            if (result.error && !result.fileError && !result.textError) {
+                messageErrorEl.textContent = result.error;
+            }
+        } else {
+            messageInput.value = '';
+            fileInput.value = '';
+            fileNameDisplay.textContent = '';
+            messageErrorEl.textContent = '';
+            fileErrorEl.textContent = '';
+
+            await latestMessages();
+
+            function scrollToBottom(element) {
+                element.scrollTop = element.scrollHeight;
+            }
+            const messageBox = document.getElementById('messageBox');
+            scrollToBottom(messageBox);
+        }
     });
-
     await loadMessages(false);
     setInterval(async () => {
         await latestMessages();

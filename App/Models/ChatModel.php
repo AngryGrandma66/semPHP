@@ -6,9 +6,14 @@ use PDO;
 
 class ChatModel extends BaseModel
 {
-    public $anonPath = '/' . BASE_PATH . '/images/assets/anonPfp.webp';
-
-    public function getChatroomByName($name)
+   public string $anonPath = '/' . BASE_PATH . '/images/assets/anonPfp.webp';
+    /**
+     * Retrieves a single chatroom by its name, or null if not found.
+     *
+     * @param string $name Chatroom name
+     * @return array|null An associative array of the chatroom row, or null
+     */
+    public function getChatroomByName(string $name): ?array
     {
         $stmt = $this->db->prepare(
             "SELECT name FROM chatrooms WHERE name = :n"
@@ -16,8 +21,15 @@ class ChatModel extends BaseModel
         $stmt->execute([':n' => $name]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
-    public function getAllChatrooms($filter, $offset, $limit)
+    /**
+     * Retrieves up to $limit chatrooms matching a filter, offset by $offset.
+     *
+     * @param string $filter The search term
+     * @param string $offset Pagination offset
+     * @param string $limit  Number of records per page
+     * @return array Array of chatroom rows
+     */
+    public function getAllChatrooms(string $filter, string $offset, string $limit): array
     {
         $stmt = $this->db->prepare("
         SELECT name
@@ -29,19 +41,31 @@ class ChatModel extends BaseModel
         $filter = '%' . $filter . '%';
 
         $stmt->bindParam(':filter', $filter);
-        $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
-        $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function createChatroom($chatroom)
+    /**
+     * Creates a new chatroom record.
+     *
+     * @param string $chatroom The name of the chatroom to create
+     * @return void
+     */
+    public function createChatroom(string $chatroom): void
     {
         $stmt = $this->db->prepare("INSERT INTO chatrooms (name) VALUES (:name)");
         $stmt->execute([':name' => $chatroom]);
     }
-
-    public function getMessagesForChatroom($chatroomName, $offset, $limit)
+    /**
+     * Fetches messages for a specific chatroom, in descending time order, limited by $limit.
+     *
+     * @param string $chatroomName Chatroom name
+     * @param string $offset       Pagination offset
+     * @param string $limit        Number of messages to fetch
+     * @return array Array of message rows
+     */
+    public function getMessagesForChatroom(string $chatroomName, string $offset, string $limit): array
     {
 
         $stmt = $this->db->prepare("
@@ -57,14 +81,23 @@ class ChatModel extends BaseModel
     ");
         $stmt->bindParam(':anonPath', $this->anonPath);
         $stmt->bindParam(':name', $chatroomName);
-        $stmt->bindValue(':limit', (int)$limit, \PDO::PARAM_INT);
-        $stmt->bindValue(':offset', (int)$offset, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
 
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function addMessage($userName, $chatroomName, $message, $imagePath)
+    /**
+     * Adds a message to a chatroom, either from an authenticated user or anonymous.
+     *
+     * @param string|null $userName The username or null
+     * @param string $chatroomName The target chatroom
+     * @param string $message The message text
+     * @param string|null $imagePath Optional path to an uploaded image
+     * @return bool True on success, false on failure
+     */
+    public function addMessage(?string $userName, string $chatroomName, string $message, ?string $imagePath): bool
     {
         $stmt = $this->db->prepare("SELECT id FROM chatrooms WHERE name = :name LIMIT 1");
         $stmt->execute([':name' => $chatroomName]);
@@ -97,7 +130,14 @@ class ChatModel extends BaseModel
         return true;
     }
 
-    public function getAllMessagesSince($chatroomName, $timestamp)
+    /**
+     * Retrieves any messages created in the chatroom at or after the given timestamp.
+     *
+     * @param string $chatroomName Chatroom name
+     * @param string $timestamp    A formatted date/time string or MySQL datetime
+     * @return array Array of new message rows
+     */
+    public function getAllMessagesSince(string $chatroomName, string $timestamp): array
     {
         $stmt = $this->db->prepare("
         SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage, chatmessages.id,
@@ -113,8 +153,13 @@ class ChatModel extends BaseModel
         $stmt->execute([':name' => $chatroomName, ':timestamp' => $timestamp,':anonPath' => $this->anonPath]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getChatroomsCount($filter = '')
+    /**
+     * Counts how many chatrooms match a given filter string.
+     *
+     * @param string $filter
+     * @return int The total count of matching chatrooms
+     */
+    public function getChatroomsCount(string $filter = ''): int
     {
         $stmt = $this->db->prepare("
         SELECT COUNT(*) as total
@@ -125,12 +170,19 @@ class ChatModel extends BaseModel
         $filter = '%'. $filter . '%';
         $stmt->bindValue(':filter', $filter);
         $stmt->execute();
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$row['total'];
     }
 
-
-    public function getMessagesByUser($username, $offset, $limit)
+    /**
+     * Retrieves messages for a specific user, offset/limit-based for pagination.
+     *
+     * @param string $username The username
+     * @param string $offset   Pagination offset
+     * @param string $limit    Page size
+     * @return array Array of messages
+     */
+    public function getMessagesByUser(string $username, string $offset, string $limit): array
     {
         $stmt = $this->db->prepare("
         SELECT id, pathtopfp
@@ -162,8 +214,13 @@ class ChatModel extends BaseModel
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function getUserMessagesCount($username)
+    /**
+     * Counts the total messages sent by a particular user.
+     *
+     * @param string $username
+     * @return int The total number of messages
+     */
+    public function getUserMessagesCount(string $username): int
     {
         $stmt = $this->db->prepare("
         SELECT COUNT(*) AS total
@@ -174,8 +231,15 @@ class ChatModel extends BaseModel
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$row['total'];
     }
-
-    public function editMessage($messageId, $newText, $username)
+    /**
+     * Edits an existing message's text if it belongs to the given username.
+     *
+     * @param int $messageId The ID of the message to edit
+     * @param string $newText   The updated message text
+     * @param string $username  The current user's username
+     * @return bool True if edit successful, false otherwise
+     */
+    public function editMessage(int $messageId, string $newText, string $username): bool
     {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :username");
         $stmt->execute([':username' => $username]);

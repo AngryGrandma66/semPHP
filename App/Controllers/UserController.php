@@ -4,10 +4,20 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Services\ImageUploadService;
+use JetBrains\PhpStorm\NoReturn;
 
 class UserController extends BaseController
 {
-    public function register()
+    /**
+     * Registers a new user with username, email, password, and a mandatory profile picture.
+     *
+     * Behavior:
+     * - Validates username (3–20 chars, no special symbols except underscore), email, password complexity, and file upload.
+     * - If validation passes, creates the user record and uploads the file.
+     *
+     * @return void
+     */
+    #[NoReturn] public function register(): void
     {
         $username = $_POST['username'] ?? '';
         $email = $_POST['email'] ?? '';
@@ -50,7 +60,6 @@ class UserController extends BaseController
                 'success' => false,
                 'errors' => $errors,
             ], 400);
-            return;
         }
 
         $imageUploadService = new ImageUploadService();
@@ -61,7 +70,6 @@ class UserController extends BaseController
                 'success' => false,
                 'errors' => ['pfpPic' => $uploadResponse['message']],
             ], 400);
-            return;
         }
         $userModel = new UserModel();
         if ($userModel->getUserByUsername($username)) {
@@ -72,7 +80,6 @@ class UserController extends BaseController
         }
         if (!empty($errors)) {
             $this->sendJsonResponse(['success' => false, 'errors' => $errors,], 409);
-            return;
         }
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $userModel->createUser($username, $email, $hashedPassword, $uploadResponse['path']);
@@ -82,8 +89,16 @@ class UserController extends BaseController
             'message' => 'Registered successfully.',
         ]);
     }
-
-    public function login()
+    /**
+     * Authenticates an existing user by username or email and password.
+     *
+     * Behavior:
+     * - Uses JSON input: {"loginInput": "...", "password": "..."}.
+     * - If successful, sets session data; otherwise returns error JSON.
+     *
+     * @return void
+     */
+    #[NoReturn] public function login(): void
     {
         $data = json_decode(file_get_contents('php://input'), true);
         $loginInput = $data['loginInput'] ?? '';
@@ -128,8 +143,12 @@ class UserController extends BaseController
             'message' => 'Logged in successfully.'
         ]);
     }
-
-    public function logout()
+    /**
+     * Logs out the current user by clearing session data.
+     *
+     * @return void
+     */
+    #[NoReturn] public function logout(): void
     {
         session_unset();
         session_destroy();
@@ -137,8 +156,16 @@ class UserController extends BaseController
         $this->sendJsonResponse(['success' => true, 'message' => 'Logged out']);
     }
 
-
-    public function getCurrentUser()
+    /**
+     * Returns JSON about the current logged-in user, if any.
+     *
+     * Behavior:
+     * - If logged in, returns {"success": true, "user": "...", "role": "..."}.
+     * - Otherwise, returns an error message.
+     *
+     * @return void
+     */
+    #[NoReturn] public function getCurrentUser(): void
     {
         if (isset($_SESSION['username'])) {
             $this->sendJsonResponse([
@@ -147,7 +174,7 @@ class UserController extends BaseController
                 'user' => $_SESSION['username'],
                 'role' => $_SESSION['role'] ?? 'user',
             ]);
-            return;
+
         }
 
         $this->sendJsonResponse([
@@ -156,8 +183,12 @@ class UserController extends BaseController
         ]);
     }
 
-
-    public function userByName()
+    /**
+     * Fetches user data by username, used to view another user's profile info.
+     *
+     * @return void
+     */
+    #[NoReturn] public function userByName(): void
     {
         if (!isset($_GET['username'])) {
             $this->sendJsonResponse(['success' => false, 'message' => 'No name in GET'], 400);

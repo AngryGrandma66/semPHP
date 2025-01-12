@@ -4,10 +4,22 @@ namespace App\Controllers;
 
 use App\Models\ChatModel;
 use App\Services\ImageUploadService;
+use JetBrains\PhpStorm\NoReturn;
 
 class ChatController extends BaseController
 {
-    public function chatroomByName()
+    /**
+     * Checks if a chatroom exists by name.
+     *
+     * Requirements:
+     * - The `$_GET['name']` parameter must be present.
+     * Behavior:
+     * - If the chatroom is found, returns a success JSON response.
+     * - Otherwise, returns an error message in JSON.
+     *
+     * @return void
+     */
+    #[NoReturn] public function chatroomByName(): void
     {
         if (!isset($_GET['name'])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'This chatroom does not exist'],404);
@@ -20,8 +32,20 @@ class ChatController extends BaseController
         $this->sendJsonResponse(['success' => true, 'message' => 'This chatroom exists']);
 
     }
-
-    public function getChatrooms()
+    /**
+     * Retrieves a paginated list of chatrooms, optionally filtered by a search term.
+     *
+     * Requirements:
+     * - `$_GET["filter"]` (string, up to 50 chars) and `$_GET["offset"]` (int) are required.
+     * - Returns up to 10 chatrooms per page by default.
+     *
+     * Behavior:
+     * - If no chatrooms are found, returns a JSON error message.
+     * - Otherwise, returns "chatrooms" (array) and "total" (int) in JSON.
+     *
+     * @return void
+     */
+    #[NoReturn] public function getChatrooms(): void
     {
         if (!isset($_GET["filter"]) || !isset($_GET["offset"])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing filter or offset'], 400);
@@ -56,8 +80,19 @@ class ChatController extends BaseController
             'total' => $totalCount,
         ]);
     }
-
-    public function getMessagesForChatroom()
+    /**
+     * Retrieves messages for a specified chatroom, with pagination.
+     *
+     * Requirements:
+     * - `$_GET["chatroom"]`: string (1–20 chars) is the chatroom name.
+     * - `$_GET["offset"]`: int for pagination offset.
+     *
+     * Behavior:
+     * - Returns an array of messages, each containing text, username, timestamp, etc.
+     *
+     * @return void
+     */
+    #[NoReturn] public function getMessagesForChatroom(): void
     {
         if (!isset($_GET["chatroom"]) || !isset($_GET["offset"])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing chatroomName or offset'], 400);
@@ -66,7 +101,7 @@ class ChatController extends BaseController
         $chatroomName = $_GET["chatroom"];
         $messageOffset = (int)$_GET["offset"];
 
-        if (strlen($chatroomName) < 1 || strlen($chatroomName) > 50) {
+        if (strlen($chatroomName) < 1 || strlen($chatroomName) > 20) {
             $this->sendJsonResponse(['success' => false, 'error' => 'chatroomName length out of range'], 400);
         }
         if ($messageOffset < 0) {
@@ -84,8 +119,15 @@ class ChatController extends BaseController
 
         $this->sendJsonResponse(['success' => true, 'messages' => $messages]);
     }
-
-    public function addChatroom()
+    /**
+     * Creates a new chatroom, restricted to 'admin' or 'owner' roles.
+     *
+     * Requirements:
+     * - A JSON body with the chatroom name. It must match /^[A-Za-z0-9_]{3,20}$/.
+     *
+     * @return void
+     */
+    #[NoReturn] public function addChatroom(): void
     {
         $chatroomName = json_decode(file_get_contents('php://input'), true);
         if (!isset($_SESSION['username'])) {
@@ -112,22 +154,36 @@ class ChatController extends BaseController
         $this->sendJsonResponse(['success' => true]);
     }
 
-    public function sendMessage($chatroomName)
+    /**
+     * Sends a message (optionally with an image) to a specified chatroom.
+     *
+     * @param string $chatroomName The name of the chatroom from the route parameter.
+     *
+     * Requirements:
+     * - `$_POST["message"]`: string (1–1000 chars).
+     * - Optionally, a file upload in `$_FILES["message_image"]`.
+     *
+     * @return void
+     */
+    #[NoReturn] public function sendMessage(string $chatroomName): void
     {
         $messageText = $_POST['message'] ?? '';
         $imagePath = null;
 
         if (strlen($chatroomName) < 1 || strlen($chatroomName) > 30) {
-            $this->sendJsonResponse(['success' => false, 'error' => 'chatroomName invalid'], 400);
+            $this->sendJsonResponse(['success' => false, 'textError' => 'chatroomName invalid'], 400);
         }
         if (strlen($messageText)<1 ||strlen($messageText) > 1000) {
-            $this->sendJsonResponse(['success' => false, 'error' => 'message length out of range'], 400);
+            $this->sendJsonResponse(['success' => false, 'textError' => 'message length out of range'], 400);
         }
         if (!empty($_FILES['message_image']['tmp_name'])) {
             $imageService = new ImageUploadService();
             $uploadRes = $imageService->uploadImage($_FILES['message_image']);
-            if (!$uploadRes['status']) {
-                $this->sendJsonResponse($uploadRes, 400);
+            if ($uploadRes['status'] === 'error') {
+                $this->sendJsonResponse([
+                    'success' => false,
+                    'errors' => ['fileError' => $uploadRes['message']],
+                ], 400);
             }
             $imagePath = $uploadRes['path'];
         }
@@ -141,8 +197,16 @@ class ChatController extends BaseController
         $this->sendJsonResponse(['success' => false, 'message' => 'message not sent'], 500);
 
     }
-
-    public function getLatestMessages()
+    /**
+     * Retrieves any new messages posted to the chatroom since a given timestamp.
+     *
+     * Requirements:
+     * - `$_GET["timestamp"]`: Unix timestamp.
+     * - `$_GET["chatroomName"]`: The chatroom name.
+     *
+     * @return void
+     */
+    #[NoReturn] public function getLatestMessages(): void
     {
         if (!isset($_GET["timestamp"]) || !isset($_GET["chatroomName"])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'missing parameters'], 400);

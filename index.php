@@ -6,7 +6,6 @@ session_start();
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 $fullUrl =  ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'); // Only remove leading slashes
-error_log(var_export($fullUrl, true));
 function matchRoute($url, $method, $routes): ?array
 {
     foreach ($routes as $pattern => $routeInfo) {

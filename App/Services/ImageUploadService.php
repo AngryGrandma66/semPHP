@@ -4,6 +4,24 @@ namespace App\Services;
 
 class ImageUploadService
 {
+    /**
+     * Handles image upload from $_FILES, optionally resizing if it's for a profile picture.
+     *
+     * Validates:
+     * - Upload error code
+     * - File size (compares to MAX_IMAGE_SIZE)
+     * - MIME type (JPEG, PNG, WebP)
+     * - Scales the image to 64x64 if $isProfilePicture == true; otherwise max 400px dimension
+     * - Saves as .webp
+     *
+     * @param array $file             The $_FILES array element, e.g. $_FILES['pfpPic']
+     * @param bool  $isProfilePicture Whether to force a 64x64 scaling for a user avatar
+     *
+     * @return array An array with keys:
+     *               - "status": 'success'|'error'
+     *               - "message": Detailed status message
+     *               - "path": The publicly accessible path to the saved file (if success)
+     */
     public function uploadImage(array $file, bool $isProfilePicture = false): array
     {
         if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
@@ -73,7 +91,14 @@ class ImageUploadService
             'path' => $publicPath
         ];
     }
-
+    /**
+     * Creates an image resource (GD) from a given file path and its MIME type.
+     *
+     * @param string $filePath Full path to the uploaded file
+     * @param string $mimeType The detected MIME type, e.g. 'image/jpeg'
+     *
+     * @return resource|false A GD image resource on success, or false on failure
+     */
     private function createImageResource(string $filePath, string $mimeType)
     {
         return match ($mimeType) {
@@ -83,7 +108,15 @@ class ImageUploadService
             default => false,
         };
     }
-
+    /**
+     * Scales a GD image resource to either a fixed 64x64 (if profile pic)
+     * or to a maximum dimension of 400 (keeping aspect ratio).
+     *
+     * @param resource $sourceImage      The source GD image resource
+     * @param bool     $isProfilePicture Whether to force 64x64 for a user avatar
+     *
+     * @return resource|false A new GD image resource on success, or false on failure
+     */
     private function scaleImage($sourceImage, bool $isProfilePicture)
     {
         $originalWidth = imagesx($sourceImage);
