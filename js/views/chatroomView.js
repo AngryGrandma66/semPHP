@@ -7,6 +7,8 @@ import {
 } from "../api/chatApi.js";
 import {renderChatrooms, renderFancyPagination} from "../misc/renderAdds.js";
 
+let pollingIntervalId = null;
+
 export async function renderView() {
     let pageURL = window.location.href;
     let chatroomNameFromUrl = decodeURIComponent(pageURL.substring(pageURL.lastIndexOf('/') + 1));
@@ -110,7 +112,7 @@ export async function renderView() {
         const latestMessages = await getLatestMessages(savedTimestamp, chatroomNameFromUrl);
         if (latestMessages.success) {
             if (latestMessages.messages.length > 0) {
-                renderMessages(messageBox, latestMessages.messages,displayedIds);
+                renderMessages(messageBox, latestMessages.messages, displayedIds);
                 messageOffset += latestMessages.messages.length;
             }
             savedTimestamp = Math.floor(Date.now() / 1000);
@@ -124,7 +126,7 @@ export async function renderView() {
         const data = await getMessagesForChatroom(chatroomNameFromUrl, messageOffset);
         if (data.success) {
             if (data.messages.length > 0) {
-                renderMessages(messageBox, data.messages,displayedIds, !prepend);
+                renderMessages(messageBox, data.messages, displayedIds, !prepend);
                 messageOffset += data.messages.length;
             } else {
                 loadMoreButton.disabled = true;
@@ -146,7 +148,7 @@ export async function renderView() {
     const fileNameDisplay = document.getElementById('chatFileName');
 
     fileInput.addEventListener('change', () => {
-        if(fileInput.files && fileInput.files.length > 0) {
+        if (fileInput.files && fileInput.files.length > 0) {
             fileNameDisplay.textContent = fileInput.files[0].name;
         } else {
             fileNameDisplay.textContent = '';
@@ -199,12 +201,13 @@ export async function renderView() {
         }
     });
     await loadMessages(false);
-    setInterval(async () => {
+    if (pollingIntervalId) clearInterval(pollingIntervalId);
+    pollingIntervalId = setInterval(async () => {
         await latestMessages();
     }, 1000);
 }
 
-function renderMessages(root, messages,displayedIds, prepend = false) {
+function renderMessages(root, messages, displayedIds, prepend = false) {
     const newMessages = [];
     for (const msg of messages) {
         if (!displayedIds.has(msg.id)) {
