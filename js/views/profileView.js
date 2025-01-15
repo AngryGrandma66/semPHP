@@ -112,7 +112,7 @@ export async function renderView() {
                 const messageImage = document.createElement('img');
                 messageImage.src = msg.pathtoimage;
                 messageImage.classList.add('message-image');
-                messageDiv.appendChild(userPfpImg);
+                messageDiv.appendChild(messageImage);
             }
             const timestampSpan = document.createElement('span');
             timestampSpan.textContent = msg.timestamp;

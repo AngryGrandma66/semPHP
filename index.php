@@ -2,10 +2,38 @@
 
 global $routes;
 require_once __DIR__ . '/autoload.php';
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'domain'   => '',
+    'secure'   => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
 session_start();
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
-$fullUrl =  ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'); // Only remove leading slashes
+$fullUrl =  ltrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+
+
+/**
+ * Matches a request URL and HTTP method with the defined routes.
+ *
+ * Iterates through the global $routes map, converting each route pattern into a regular
+ * expression. If a route pattern matches the URL and the HTTP method matches, it returns an array
+ * containing the controller, action, and any URL parameters decoded from the match.
+ *
+ * If the HTTP method does not match the route, returns an array with an error code 405.
+ *
+ * @param string $url     The requested URL path.
+ * @param string $method  The HTTP request method (GET, POST, etc.).
+ * @param array  $routes  The map of routes.
+ *
+ * @return array|null Associative array with keys 'controller', 'action', and 'params' on success;
+ *                    an array with key 'error' and value 405 if method not allowed;
+ *                    or null if no match is found.
+ */
 function matchRoute($url, $method, $routes): ?array
 {
     foreach ($routes as $pattern => $routeInfo) {

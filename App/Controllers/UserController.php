@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Services\ImageUploadService;
-use JetBrains\PhpStorm\NoReturn;
 
 class UserController extends BaseController
 {
@@ -17,7 +16,7 @@ class UserController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function register(): void
+    public function register()
     {
         $username = $_POST['username'] ?? '';
         $email = $_POST['email'] ?? '';
@@ -89,6 +88,7 @@ class UserController extends BaseController
             'message' => 'Registered successfully.',
         ]);
     }
+
     /**
      * Authenticates an existing user by username or email and password.
      *
@@ -98,7 +98,7 @@ class UserController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function login(): void
+    public function login(): void
     {
         $data = json_decode(file_get_contents('php://input'), true);
         $loginInput = $data['loginInput'] ?? '';
@@ -143,12 +143,13 @@ class UserController extends BaseController
             'message' => 'Logged in successfully.'
         ]);
     }
+
     /**
      * Logs out the current user by clearing session data.
      *
      * @return void
      */
-    #[NoReturn] public function logout(): void
+    public function logout(): void
     {
         session_unset();
         session_destroy();
@@ -165,7 +166,7 @@ class UserController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function getCurrentUser(): void
+    public function getCurrentUser()
     {
         if (isset($_SESSION['username'])) {
             $this->sendJsonResponse([
@@ -188,7 +189,7 @@ class UserController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function userByName(): void
+    public function userByName()
     {
         if (!isset($_GET['username'])) {
             $this->sendJsonResponse(['success' => false, 'message' => 'No name in GET'], 400);

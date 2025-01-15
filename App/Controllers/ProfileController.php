@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 
 use App\Models\ChatModel;
-use JetBrains\PhpStorm\NoReturn;
 
 class ProfileController extends BaseController
 {
@@ -20,7 +19,7 @@ class ProfileController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function getUserMessages(): void
+    public function getUserMessages()
     {
         if (!isset($_GET['username']) || !isset($_GET['offset'])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing parameters'], 400);
@@ -60,7 +59,7 @@ class ProfileController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function editMessage(): void
+    public function editMessage()
     {
 
         if (!isset($_SESSION['username'])) {
@@ -88,6 +87,4 @@ class ProfileController extends BaseController
             $this->sendJsonResponse(['success' => false, 'error' => 'Could not update message'], 403);
         }
     }
-
-
 }

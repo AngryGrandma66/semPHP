@@ -22,7 +22,7 @@ class ImageUploadService
      *               - "message": Detailed status message
      *               - "path": The publicly accessible path to the saved file (if success)
      */
-    public function uploadImage(array $file, bool $isProfilePicture = false): array
+    public function uploadImage($file, $isProfilePicture = false)
     {
         if (!isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
             return [
@@ -99,7 +99,7 @@ class ImageUploadService
      *
      * @return resource|false A GD image resource on success, or false on failure
      */
-    private function createImageResource(string $filePath, string $mimeType)
+    private function createImageResource($filePath, $mimeType)
     {
         return match ($mimeType) {
             'image/jpeg' => imagecreatefromjpeg($filePath),
@@ -117,7 +117,7 @@ class ImageUploadService
      *
      * @return resource|false A new GD image resource on success, or false on failure
      */
-    private function scaleImage($sourceImage, bool $isProfilePicture)
+    private function scaleImage($sourceImage, $isProfilePicture)
     {
         $originalWidth = imagesx($sourceImage);
         $originalHeight = imagesy($sourceImage);

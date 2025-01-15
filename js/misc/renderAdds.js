@@ -1,23 +1,23 @@
 export function renderChatrooms(chatroomList, chatrooms) {
-    chatroomList.innerHTML = '';
+
+    const newContent = document.createElement('div');
 
     if (chatrooms.length === 0) {
-        chatroomList.innerHTML = '<p>No chatrooms found.</p>';
-        return;
+        newContent.innerHTML = '<p>No chatrooms found.</p>';
+    } else {
+        const ul = document.createElement('ul');
+        for (const chatroom of chatrooms) {
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '/chatroom/' + encodeURIComponent(chatroom.name);
+            link.textContent = chatroom.name;
+            li.appendChild(link);
+            ul.appendChild(li);
+        }
+        newContent.appendChild(ul);
     }
 
-    const ul = document.createElement('ul');
-
-    for (const chatroom of chatrooms) {
-        const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.href = '/chatroom/' + encodeURIComponent(chatroom.name);
-        link.textContent = chatroom.name;
-        li.appendChild(link);
-        ul.appendChild(li);
-    }
-
-    chatroomList.appendChild(ul);
+    chatroomList.replaceChildren(...newContent.childNodes);
 }
 
 export function renderFancyPagination(containerEl, currentPage, totalPages, onPageClick) {
@@ -56,7 +56,7 @@ export function renderFancyPagination(containerEl, currentPage, totalPages, onPa
     }
 
     if (currentPage < totalPages - 1) {
-        addPageButton(currentPage + 1,false);
+        addPageButton(currentPage + 1, false);
     }
 
     if (totalPages > 1) {

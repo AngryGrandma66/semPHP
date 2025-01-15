@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\ChatModel;
 use App\Services\ImageUploadService;
-use JetBrains\PhpStorm\NoReturn;
 
 class ChatController extends BaseController
 {
@@ -19,7 +18,7 @@ class ChatController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function chatroomByName(): void
+    public function chatroomByName()
     {
         if (!isset($_GET['name'])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'This chatroom does not exist'],404);
@@ -45,7 +44,7 @@ class ChatController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function getChatrooms(): void
+    public function getChatrooms()
     {
         if (!isset($_GET["filter"]) || !isset($_GET["offset"])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing filter or offset'], 400);
@@ -89,7 +88,7 @@ class ChatController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function getMessagesForChatroom(): void
+    public function getMessagesForChatroom()
     {
         if (!isset($_GET["chatroom"]) || !isset($_GET["offset"])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'Missing chatroomName or offset'], 400);
@@ -122,7 +121,7 @@ class ChatController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function addChatroom(): void
+    public function addChatroom()
     {
         $chatroomName = json_decode(file_get_contents('php://input'), true);
         if (!isset($_SESSION['username'])) {
@@ -160,7 +159,7 @@ class ChatController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function sendMessage(string $chatroomName): void
+    public function sendMessage(string $chatroomName)
     {
         $messageText = $_POST['message'] ?? '';
         $imagePath = null;
@@ -201,7 +200,7 @@ class ChatController extends BaseController
      *
      * @return void
      */
-    #[NoReturn] public function getLatestMessages(): void
+    public function getLatestMessages()
     {
         if (!isset($_GET["timestamp"]) || !isset($_GET["chatroomName"])) {
             $this->sendJsonResponse(['success' => false, 'error' => 'missing parameters'], 400);

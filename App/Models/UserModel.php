@@ -15,7 +15,7 @@ class UserModel extends BaseModel
      * @param string $pathtopfp  File path to the uploaded profile picture
      * @return void
      */
-    public function createUser(string $username, string $email, string $passwordHash, string $pathtopfp): void
+    public function createUser($username, $email, $passwordHash, $pathtopfp)
     {
         $stmt = $this->db->prepare(
             "INSERT INTO users (username, email, password,pathtopfp)
@@ -34,7 +34,7 @@ class UserModel extends BaseModel
      * @param string $username
      * @return array|null Returns an associative array if found, or null otherwise
      */
-    public function getUserByUsername(string $username): ?array
+    public function getUserByUsername($username)
     {
         $stmt = $this->db->prepare(
             "SELECT username,email,role,pathtopfp FROM users WHERE username = :u"
@@ -49,7 +49,7 @@ class UserModel extends BaseModel
      * @param string $username
      * @return mixed
      */
-    public function getUserByUsernameValidation(string $username): mixed
+    public function getUserByUsernameValidation($username)
     {
         $stmt = $this->db->prepare(
             "SELECT username,password,role FROM users WHERE username = :u"
@@ -64,7 +64,7 @@ class UserModel extends BaseModel
      * @param string $email
      * @return array|null
      */
-    public function getUserByEmailValidation(string $email): ?array
+    public function getUserByEmailValidation($email)
     {
         $stmt = $this->db->prepare(
             "SELECT email,password,role FROM users WHERE email = :e"
@@ -80,7 +80,7 @@ class UserModel extends BaseModel
      * @param string $limit  Number of user records to fetch
      * @return array Array of user rows (username, email, role, pathtopfp)
      */
-    public function getAllUsers(string $offset, string $limit): array
+    public function getAllUsers($offset, $limit)
     {
         $stmt = $this->db->prepare("
         SELECT username, email, role,pathtopfp
@@ -98,7 +98,7 @@ class UserModel extends BaseModel
      *
      * @return int The total number of users
      */
-    public function getUsersCount(): int
+    public function getUsersCount()
     {
         $stmt = $this->db->prepare("SELECT COUNT(*) AS total FROM users");
         $stmt->execute();
@@ -112,7 +112,7 @@ class UserModel extends BaseModel
      * @param string $role     The new role ('admin', 'user', or 'owner')
      * @return void
      */
-    public function updateUserRole(string $username, string $role): void
+    public function updateUserRole($username, $role)
     {
         $stmt = $this->db->prepare("UPDATE users SET role = :role WHERE username = :u");
         $stmt->execute([

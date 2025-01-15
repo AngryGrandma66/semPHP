@@ -13,7 +13,7 @@ class ChatModel extends BaseModel
      * @param string $name Chatroom name
      * @return array|null An associative array of the chatroom row, or null
      */
-    public function getChatroomByName(string $name): ?array
+    public function getChatroomByName($name)
     {
         $stmt = $this->db->prepare(
             "SELECT name FROM chatrooms WHERE name = :n"
@@ -29,7 +29,7 @@ class ChatModel extends BaseModel
      * @param string $limit  Number of records per page
      * @return array Array of chatroom rows
      */
-    public function getAllChatrooms(string $filter, string $offset, string $limit): array
+    public function getAllChatrooms($filter,$offset, $limit)
     {
         $stmt = $this->db->prepare("
         SELECT name
@@ -52,7 +52,7 @@ class ChatModel extends BaseModel
      * @param string $chatroom The name of the chatroom to create
      * @return void
      */
-    public function createChatroom(string $chatroom): void
+    public function createChatroom($chatroom)
     {
         $stmt = $this->db->prepare("INSERT INTO chatrooms (name) VALUES (:name)");
         $stmt->execute([':name' => $chatroom]);
@@ -65,7 +65,7 @@ class ChatModel extends BaseModel
      * @param string $limit        Number of messages to fetch
      * @return array Array of message rows
      */
-    public function getMessagesForChatroom(string $chatroomName, string $offset, string $limit): array
+    public function getMessagesForChatroom($chatroomName, $offset, $limit)
     {
 
         $stmt = $this->db->prepare("
@@ -97,7 +97,7 @@ class ChatModel extends BaseModel
      * @param string|null $imagePath Optional path to an uploaded image
      * @return bool True on success, false on failure
      */
-    public function addMessage(?string $userName, string $chatroomName, string $message, ?string $imagePath): bool
+    public function addMessage($userName, $chatroomName, $message, $imagePath)
     {
         $stmt = $this->db->prepare("SELECT id FROM chatrooms WHERE name = :name LIMIT 1");
         $stmt->execute([':name' => $chatroomName]);
@@ -137,7 +137,7 @@ class ChatModel extends BaseModel
      * @param string $timestamp    A formatted date/time string or MySQL datetime
      * @return array Array of new message rows
      */
-    public function getAllMessagesSince(string $chatroomName, string $timestamp): array
+    public function getAllMessagesSince($chatroomName, $timestamp)
     {
         $stmt = $this->db->prepare("
         SELECT chatmessages.message, chatmessages.timestamp, users.username,chatmessages.pathtoimage, chatmessages.id,
@@ -159,7 +159,7 @@ class ChatModel extends BaseModel
      * @param string $filter
      * @return int The total count of matching chatrooms
      */
-    public function getChatroomsCount(string $filter = ''): int
+    public function getChatroomsCount($filter = '')
     {
         $stmt = $this->db->prepare("
         SELECT COUNT(*) as total
@@ -182,7 +182,7 @@ class ChatModel extends BaseModel
      * @param string $limit    Page size
      * @return array Array of messages
      */
-    public function getMessagesByUser(string $username, string $offset, string $limit): array
+    public function getMessagesByUser($username, $offset, $limit)
     {
         $stmt = $this->db->prepare("
         SELECT id, pathtopfp
@@ -220,7 +220,7 @@ class ChatModel extends BaseModel
      * @param string $username
      * @return int The total number of messages
      */
-    public function getUserMessagesCount(string $username): int
+    public function getUserMessagesCount($username)
     {
         $stmt = $this->db->prepare("
         SELECT COUNT(*) AS total
@@ -239,7 +239,7 @@ class ChatModel extends BaseModel
      * @param string $username  The current user's username
      * @return bool True if edit successful, false otherwise
      */
-    public function editMessage(int $messageId, string $newText, string $username): bool
+    public function editMessage($messageId, $newText, $username)
     {
         $stmt = $this->db->prepare("SELECT id FROM users WHERE username = :username");
         $stmt->execute([':username' => $username]);

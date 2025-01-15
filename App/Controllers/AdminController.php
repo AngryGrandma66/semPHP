@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
-use JetBrains\PhpStorm\NoReturn;
 
 class AdminController extends BaseController
 {
@@ -24,7 +23,7 @@ class AdminController extends BaseController
      *
      * @return void Outputs JSON and terminates the script (via sendJsonResponse).
      */
-    #[NoReturn] public function getAllUsers(): void
+    public function getAllUsers()
     {
         if (!isset($_SESSION['role']) ||
             ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'owner')) {
@@ -66,7 +65,7 @@ class AdminController extends BaseController
      *
      * @return void Outputs JSON and terminates (via sendJsonResponse).
      */
-    #[NoReturn] public function updateUserRole(): void
+    public function updateUserRole()
     {
         if (!isset($_SESSION['role']) ||
             ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'owner')) {
